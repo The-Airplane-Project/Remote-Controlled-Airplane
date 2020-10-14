@@ -11,7 +11,8 @@
 //#define D8 15 // CSN to pin4 NRF onlyif is present a PullDown resistor 3.3/4.7 Kohm
 
 int counter = 0;
-
+String a = " ";
+char text[4];
 RF24 radio(D1, D2); //CE-CSN
 
 void setup(void){
@@ -32,21 +33,26 @@ void setup(void){
 
 void loop(void){
   radio.startListening() ;
-  Serial.println("Starting loop. Radio on.") ;
+  //Serial.println("Starting loop. Radio on.") ;
   char receivedMessage[32] = {0} ;
+  while (Serial.available()) {
+        a= Serial.readString();// read the incoming data as string
+        delay(10);
+    }
   if (radio.available()){
     radio.read(receivedMessage, sizeof(receivedMessage));
-    Serial.println(receivedMessage) ;
-    Serial.println("Turning off the radio.") ;
+    //Serial.println(receivedMessage) ;
+   //Serial.println("Turning off the radio.") ;
     radio.stopListening() ;
     
     String stringMessage(receivedMessage) ;
     
-    if (stringMessage == "GETSTRING"){
-      Serial.println("Looks like they want a string!") ;
-      const char text[] = "Hello World!" ;
+    if (stringMessage == "GETSTRING"){       
+      strcpy(text, a.c_str());
       radio.write(text, sizeof(text)) ;
-      Serial.println("We sent our message.") ;
+       //while (Serial.available()) {
+      Serial.println("We sent our message: "+ a) ;
+      // }
     }
     
   }

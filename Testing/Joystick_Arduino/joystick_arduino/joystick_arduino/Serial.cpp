@@ -9,7 +9,7 @@ Serial::Serial(const char* portName)
     std::string name = portName;
     std::wstring comID = comPrefix + ws;
     //Try to connect to the given port throuh CreateFile
-    this->hSerial = CreateFile(comID.c_str(),
+    this->hSerial = CreateFile(L"\\\\.\\COM6"/*comID.c_str()*/,
         GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,

@@ -55,4 +55,4 @@ while True:
     print("Our received message decodes to: {}".format(string))
 
     radio.stopListening()
-    time.sleep(1)
+    time.sleep(0.1)

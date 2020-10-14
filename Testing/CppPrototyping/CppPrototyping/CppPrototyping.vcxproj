@@ -148,6 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gamepad.cpp" />
+    <ClCompile Include="Serial.cpp" />
+    <ClCompile Include="serial_esp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SerialClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

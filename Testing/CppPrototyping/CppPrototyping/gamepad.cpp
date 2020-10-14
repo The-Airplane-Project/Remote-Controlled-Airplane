@@ -1,3 +1,4 @@
+
 // CppPrototyping.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Checkout https://github.com/roblambell/XboxOneController/blob/master/Sample%20App/XboxController.cpp
 
@@ -143,7 +144,7 @@ bool Gamepad::IsPressed(WORD button)
     return (state.Gamepad.wButtons & button) != 0;
 }
 
-
+#define MAIN
 #ifndef MAIN
 
 using std::cout;

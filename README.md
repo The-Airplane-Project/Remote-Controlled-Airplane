@@ -1,5 +1,8 @@
 # Remote-Controlled-Airplane
-in this project, we aim to create a remote controlled airplane with video streaming capabilities using solely opensource standards
+**This is the radio_test branch. Look at the readme file in the directory NRF24L01 for most up-to-date info.**
+
+In this project, we aim to create a remote controlled airplane with video streaming capabilities using solely opensource standards
+
 
 ## Controls
 Roll: left joystick x axis\

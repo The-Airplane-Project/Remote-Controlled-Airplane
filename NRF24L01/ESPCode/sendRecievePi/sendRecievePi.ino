@@ -16,7 +16,6 @@ char text[4];
 RF24 radio(D1, D2); //CE-CSN
 
 void setup(void){
-  //while (!Serial) ;
   Serial.begin(9600) ;
   
   radio.begin() ;
@@ -36,7 +35,7 @@ void loop(void){
   //Serial.println("Starting loop. Radio on.") ;
   char receivedMessage[32] = {0} ;
   while (Serial.available()) {
-        a= Serial.readString();// read the incoming data as string
+        a= Serial.readString();// read the incoming serial data as string
         delay(10);
     }
   if (radio.available()){
@@ -47,8 +46,8 @@ void loop(void){
     
     String stringMessage(receivedMessage) ;
     
-    if (stringMessage == "GETSTRING"){       
-      strcpy(text, a.c_str());
+    if (stringMessage == "GETSTRING"){//Recieved message "GETSTRING" from RPi     
+      strcpy(text, a.c_str()); //Copy string into character array
       radio.write(text, sizeof(text)) ;
        //while (Serial.available()) {
       Serial.println("We sent our message: "+ a) ;
@@ -58,6 +57,5 @@ void loop(void){
   }
   
   delay(100) ;
-  
   
 }

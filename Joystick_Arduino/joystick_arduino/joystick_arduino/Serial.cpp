@@ -1,15 +1,15 @@
 #include "SerialClass.h"
 #include <string>
-Serial::Serial(const char* portName)
+Serial::Serial(const char* portName)// Does not work yet for some reason. Manually modify COM port in the CreatFile() function
 {
     //We're not yet connected
     this->connected = false;
-    std::wstring comPrefix = L"\\\\.\\";
-    std::wstring ws(&portName[0], &portName[3]);
-    std::string name = portName;
-    std::wstring comID = comPrefix + ws;
+    std::wstring comPrefix = L"\\\\.\\"; //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
+    std::wstring ws(&portName[0], &portName[3]); //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
+    std::string name = portName; //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
+    std::wstring comID = comPrefix + ws; //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
     //Try to connect to the given port throuh CreateFile
-    this->hSerial = CreateFile(L"\\\\.\\COM6"/*comID.c_str()*/,
+    this->hSerial = CreateFile(L"\\\\.\\COM10"/*comID.c_str()*/,
         GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,

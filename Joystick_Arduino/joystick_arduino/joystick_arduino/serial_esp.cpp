@@ -16,8 +16,9 @@ using namespace std;
 
 
 int main() {
-    Serial* port = new Serial("COM4");
-    if (port->IsConnected()) cout << "Connected!" << endl;
+    Serial* port = new Serial("COM4");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
+    if (port->IsConnected()){
+        cout << "Connected!" << endl;
 
     char data[32] = "";
     char command[32];
@@ -38,7 +39,7 @@ int main() {
         wait_count++;
         if (wait_count >= wait_gen) {
             new_data = true;
-            wait_gen = 0 + (std::rand() % (180 - 0 + 1));//random int between 0 and 180
+            wait_gen = 100 + (std::rand() % (180 - 100 + 1));//random int between 0 and 180
             wait_count = 0;
         }
         if (new_data) {
@@ -51,15 +52,7 @@ int main() {
             cout << "Sent to ESP: " << command << endl;
             new_data = false;
         }
-        /*std::cout << "Enter your command: ";
-        std::cin.get(command, 2);     //input command
-        std::cin.clear(); // to reset the stream state
-        std::cin.ignore(INT_MAX, '\n'); // to read and ignore all characters except 'EOF' 
-        int msglen = strlen(command);
-        if (port->WriteData(command, msglen)) {   //write to arduino
-            printf("\n(writing success)\n");
-        }
-        */
+
         //delay
         Sleep(10);
 
@@ -67,10 +60,16 @@ int main() {
         n = port->ReadData(data, 31);
         if (n != -1) {
             data[n] = 0;
+            cout << "Current Message: " << command << endl;
             cout << "ESP responds: " << data << endl;
         }
     }
 
     system("pause");
     return 0;
+    }
+    else { // COM Port not connected
+        system("pause");
+        return 0;
+    }
 }

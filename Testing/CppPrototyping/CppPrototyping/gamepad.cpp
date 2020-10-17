@@ -1,3 +1,4 @@
+
 // CppPrototyping.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Checkout https://github.com/roblambell/XboxOneController/blob/master/Sample%20App/XboxController.cpp
 
@@ -5,7 +6,8 @@
 #include <Windows.h>
 #include <Xinput.h>
 #pragma comment (lib, "xinput.lib")
-#include <stdlib.h>
+#include <cstdlib>
+#include <string>
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
@@ -18,8 +20,8 @@
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
 #ifndef DEFAULT_DEADZONE
-#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
-#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
+//#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
+//#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 #define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
 #endif // 
 
@@ -46,13 +48,14 @@ public:
     float rightStickY;
     float leftTrigger;
     float rightTrigger;
-
+	uint8_t msg[5] = { 0 };
     int  GetPort();
     XINPUT_GAMEPAD* GetState();
     bool connect();
     bool Refresh();
     bool IsPressed(WORD);
     void vibrate(int magnitude);
+	void encode();
 };
 
 int Gamepad::GetPort()
@@ -88,6 +91,7 @@ bool Gamepad::connect() {
             return false;
         }
     }
+	return false;
 }   
 
 bool Gamepad::Refresh()
@@ -143,7 +147,76 @@ bool Gamepad::IsPressed(WORD button)
     return (state.Gamepad.wButtons & button) != 0;
 }
 
+<<<<<<< HEAD
+void Gamepad::encode() {
+	msg[0] = uint8_t(leftStickX * 90 + 90); //leftX
+	msg[1] = uint8_t(leftStickY * 180 + 90); //leftY
+	msg[2] = uint8_t(rightStickY * 180 + 90); //rightY
+	uint8_t rudder = 255;
 
+	//left trigger 0 -> 89
+	//right trigger 91 --> 180
+
+	if (leftTrigger > 0.05 && rightTrigger < 0.05) {
+		rudder = uint8_t(leftTrigger*90);
+	}
+	else if (rightTrigger >0.05  && leftTrigger<0.05)
+	{
+		rudder = uint8_t( 90 + rightTrigger * 90);
+	}
+	else if (rightTrigger < 0.05 && leftTrigger < 0.05)
+	{
+		rudder = 90;
+	}
+	msg[3] = rudder;
+
+	//bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
+	//LB   RB   view  selec  X     Y   A    B
+	
+	uint8_t buttons = 0;
+	//LB
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0)
+	{
+		buttons += 128;
+	}
+	//RB
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0) {
+		buttons += 64;
+	}
+	//view
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0) {
+		buttons += 32;
+	}
+	//Select
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0) {
+		buttons += 16;
+	}
+
+	//X
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0) {
+		buttons += 8;
+	}
+	//Y
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0) {
+		buttons += 4;
+	}
+	//A
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0) {
+		buttons += 2;
+	}
+	//B
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0) {
+		buttons += 1;
+	}
+	msg[4] = buttons;
+
+
+ }
+
+
+=======
+#define MAIN
+>>>>>>> 3d6ebe882d067b052ca2addbffe8c4202b7453b7
 #ifndef MAIN
 
 using std::cout;
@@ -163,13 +236,14 @@ int main()
             
             cout << "Controller connected on port " << gamepad.GetPort() << endl;
 
+			gamepad.encode();
 
-        cout << "Left thumb stick: (" << gamepad.leftStickX << ", " << gamepad.leftStickY << ")   Right thumb stick : (" << gamepad.rightStickX << ", " << gamepad.rightStickY << ")" << endl;
+			cout << "Left thumb stick: (" << std::to_string(gamepad.msg[0]) << ", " << std::to_string(gamepad.msg[1]) << ")   Right thumb stick : (" << std::to_string(gamepad.msg[2])<< endl;
 
-        cout << "Left analog trigger: " << gamepad.leftTrigger << "   Right analog trigger: " << gamepad.rightTrigger << endl;
+			cout << "analog trigger: " << std::to_string(gamepad.msg[3]) << "   Buttons: " << std::to_string(gamepad.msg[4]) << endl;
 
-        if (gamepad.IsPressed(XINPUT_GAMEPAD_A)) cout << "(A) button pressed" << endl;
-    }
+			Sleep(200);
+		}
     }
 
 

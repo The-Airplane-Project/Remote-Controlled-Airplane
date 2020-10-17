@@ -1,9 +1,8 @@
 
 // CppPrototyping.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Checkout https://github.com/roblambell/XboxOneController/blob/master/Sample%20App/XboxController.cpp
-
-#include <iostream>
 #include <Windows.h>
+#include <iostream>
 #include <Xinput.h>
 #pragma comment (lib, "xinput.lib")
 #include <cstdlib>
@@ -23,7 +22,7 @@
 //#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 //#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 #define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
-#endif // 
+#endif 
 
 
 
@@ -147,7 +146,6 @@ bool Gamepad::IsPressed(WORD button)
     return (state.Gamepad.wButtons & button) != 0;
 }
 
-<<<<<<< HEAD
 void Gamepad::encode() {
 	msg[0] = uint8_t(leftStickX * 90 + 90); //leftX
 	msg[1] = uint8_t(leftStickY * 180 + 90); //leftY
@@ -213,10 +211,6 @@ void Gamepad::encode() {
 
  }
 
-
-=======
-#define MAIN
->>>>>>> 3d6ebe882d067b052ca2addbffe8c4202b7453b7
 #ifndef MAIN
 
 using std::cout;

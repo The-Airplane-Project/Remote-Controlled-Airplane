@@ -6,17 +6,17 @@
 //#include <stdio.h>
 #include <stdio.h>
 #include <tchar.h>
-#include "SerialClass.h"
+//#include "SerialClass.h"
 #include <string>
 //#include "SerialClass.h"	 // Library described above
-//#include "Serial.cpp"
+#include "Serial.cpp"
 
 
 using namespace std;
 
-
+#define MAIN
 int main() {
-    Serial* port = new Serial("COM4");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
+    Serial* port = new Serial("COM11");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
     if (port->IsConnected()){
         cout << "Connected!" << endl;
 

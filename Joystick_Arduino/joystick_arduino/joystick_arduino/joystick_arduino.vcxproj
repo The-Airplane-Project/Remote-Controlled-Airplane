@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gamepad.cpp" />
     <ClCompile Include="serial_esp.cpp" />
     <ClCompile Include="Serial.cpp" />
   </ItemGroup>

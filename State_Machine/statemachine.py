@@ -1,5 +1,4 @@
-from state import state
-from stateLogic import stateLogic
+from state import State
 #TODO: Implement autonomous states
 
 class IdleState (State):
@@ -17,7 +16,7 @@ class StandbyState(State):
             return CruiseState()
         return self
     def run(self):
-        print("IdleState");
+        print("StandbyState");
 
 class CruiseState (State):
     def on_event(self, event):
@@ -28,12 +27,13 @@ class CruiseState (State):
             
         return self
     def run(self):
-        print("IdleState");
-class EmergencyStateState (State):
+        print("CruiseState");
+        
+class EmergencyState (State):
     def on_event(self, event):
         if (event == "Signal"):
             return CruiseState()
         return self
     def run(self):
-        print("IdleState");        
+        print("EmergencyState");        
         

@@ -42,6 +42,7 @@ class ranger:
 
       self._inited = True
 
+      self.filename =''
    def _cbf(self, gpio, level, tick):
       if gpio == self._trig:
          if level == 0: # trigger sent
@@ -86,6 +87,13 @@ class ranger:
          self._cb.cancel()
          self.pi.set_mode(self._trig, self._trig_mode)
          self.pi.set_mode(self._echo, self._echo_mode)
+
+   def createLogFile(self, filename):
+
+   # generate random file name
+
+   def writeToFile(self, filename):
+
 
 if __name__ == "__main__":
 

@@ -1,4 +1,7 @@
+#!/usr/bin/python3
 from state import State
+import time
+import sys
 #TODO: Implement autonomous states
 
 class IdleState (State):
@@ -6,6 +9,9 @@ class IdleState (State):
         if (event == 'EngOnBtn'):
             return StandbyState()
         return self
+        
+
+    
     def run(self):
         print("IdleState");
         

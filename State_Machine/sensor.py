@@ -4,6 +4,12 @@ import time
 import FaBo9Axis_MPU9250
 import Adafruit_BMP.BMP085 as BMP085
 
+import csv
+from .ahrs import MadgwickAHRS
+from datetime import datetime, date
+
+
+
 class I2C_sensors:
     def __init__(self):
         #IMU raw values
@@ -20,6 +26,8 @@ class I2C_sensors:
 
         #file name for output (will be sequentially generated)
         self.filename = ''
+
+        self.ahrs = MadgwickAHRS
     #initiate sensors
     def set_up_Sensors(self):
         self.altimeter = BMP085.BMP085()
@@ -40,9 +48,26 @@ class I2C_sensors:
         #calibration complete
         return True
 
-    def createLogFile(self,filename):
-        #generate random file name
+    def createLogFile(self):
+        #generate log file based on generation date
+        now = datetime.now()
+        date_time = now.strftime("%m-%d-%-%H-%M-%S")
+        self.filename = str(date_time)+'.csv'
+        with open (self.filename, mode='w') as logfile:
+            file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
+            file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])
+            return
 
-    def writeToFile(self,filename):
+    #write current sensor value to file
+    #must be called after createLogFIle
+    def writeToFile(self):
+        now = datetime.now().time()
+        with open(self.filename, mode='w') as logfile:
+            file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
+            file_writer.writerow([now, self.altitude,self.temperature, self.roll, self.pitch, self.yaw])
+            return
 
     def convertSensor(self):
+        #this function uses AHRS and Kalman filter to convert sensor readings to euler angles
+
+

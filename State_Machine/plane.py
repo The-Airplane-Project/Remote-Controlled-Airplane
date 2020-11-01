@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
+from .statemachine import IdleState, StandbyState, CruiseState, EmergencyState
 import sys
 import time
-import FaBo9Axis_MPU9250
-import Adafruit_BMP.BMP085 as BMP085
+
 
 class airplane:
     def __init__(self):

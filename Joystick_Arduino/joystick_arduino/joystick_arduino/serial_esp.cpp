@@ -1,67 +1,83 @@
 #include <Windows.h>
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <tchar.h>
+#include <string>
 #include <iostream>
 #include <Xinput.h>
 #pragma comment (lib, "xinput.lib")
+#include "Serial.h"
 //#include <stdlib.h>
 //#include <stdio.h>
-#include <stdio.h>
-#include <tchar.h>
-//#include "SerialClass.h"
-#include <string>
-//#include "SerialClass.h"	 // Library described above
-#include "Serial.cpp"
+//#include "gamepad.cpp"
 
+//#include "SerialClass.h"
+//#include <string>
+//#include "SerialClass.h"	 // Library described above
+#include "gamepad.h"
 
 using namespace std;
 
-#define MAIN
 int main() {
-    Serial* port = new Serial("COM11");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
+    Serial* port = new Serial("COM10");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
     if (port->IsConnected()){
         cout << "Connected!" << endl;
-
+    const int MSGLEN = 5;
     char data[32] = "";
-    char command[32];
+    char command[MSGLEN];
+    
     int datalength = 32;  //length of the data,
     int readResult = 0;
     int n;
     bool new_data = false;
-    int wait_gen = 0;
-    int msglen = 0;
-    int wait_count = 0;
+    
     string message;
+    Gamepad gamepad;
+    while (gamepad.connect() == false) {
+        Sleep(200);
+    }
     for (int i = 0; i < 32; ++i) { data[i] = 0; } //initial the data array
 
-    //read from user input 
-    //this is where I added while loop
-
     while (1) {
-        wait_count++;
-        if (wait_count >= wait_gen) {
-            new_data = true;
-            wait_gen = 100 + (std::rand() % (180 - 100 + 1));//random int between 0 and 180
-            wait_count = 0;
+        if (gamepad.Refresh()) {
+
+            //cout << "Controller connected on port " << gamepad.GetPort() << endl;
+
+            gamepad.encode();
+
+            cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY]) << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
+
+            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " << std::to_string(gamepad.msg[Buttons]) << endl;
+            //Sleep(10);
         }
-        if (new_data) {
-            message = to_string(wait_gen);
-            strcpy_s(command, message.c_str());
-            msglen = strlen(command);
-            if (port->WriteData(command, msglen)) {   //write to ESP
+        
+        if (1) {
+            for (int i = 0; i < MSGLEN; i++) {
+                command[i] = (char)gamepad.msg[i];
+            }
+            //int controller_x = gamepad.msg[LeftStickX];
+            //message = to_string(controller_x);
+            //strcpy_s(command, message.c_str());
+            
+            //MSGLEN = strlen(command);
+            if (port->WriteData(command, MSGLEN)) {   //write to ESP
                 printf("\n(writing success)\n");
             }
-            cout << "Sent to ESP: " << command << endl;
+            cout << "Sent to ESP: " << (void*)command[0] << endl;
             new_data = false;
         }
 
         //delay
-        Sleep(10);
+        Sleep(50);
 
         //read from arduino output
         n = port->ReadData(data, 31);
         if (n != -1) {
             data[n] = 0;
-            cout << "Current Message: " << command << endl;
+            //cout << "Current Message: " << command << endl;
             cout << "ESP responds: " << data << endl;
+            Sleep(50);
         }
     }
 

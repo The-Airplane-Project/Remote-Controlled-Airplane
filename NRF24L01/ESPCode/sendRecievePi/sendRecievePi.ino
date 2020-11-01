@@ -9,10 +9,12 @@
 #define D6 12 // MISO to pin7 NRF
 #define D7 13 // MOSI to pin6 NRF
 //#define D8 15 // CSN to pin4 NRF onlyif is present a PullDown resistor 3.3/4.7 Kohm
-
+char joyMsg[6];
 int counter = 0;
 String a = " ";
-char text[4];
+char radioCommand[5];
+int availableBytes;
+char text [6];
 RF24 radio(D1, D2); //CE-CSN
 
 void setup(void){
@@ -33,11 +35,19 @@ void setup(void){
 void loop(void){
   radio.startListening() ;
   //Serial.println("Starting loop. Radio on.") ;
+  
   char receivedMessage[32] = {0} ;
-  while (Serial.available()) {
-        a= Serial.readString();// read the incoming serial data as string
-        delay(10);
-    }
+
+ int j = 0;
+ while(Serial.available())
+ {
+   joyMsg[j] = Serial.read();
+   ++j;
+ }
+ joyMsg[j] = '\0';
+ 
+ Serial.println(joyMsg);
+  
   if (radio.available()){
     radio.read(receivedMessage, sizeof(receivedMessage));
     //Serial.println(receivedMessage) ;
@@ -45,13 +55,13 @@ void loop(void){
     radio.stopListening() ;
     
     String stringMessage(receivedMessage) ;
-    
+    String a = "123456";
     if (stringMessage == "GETSTRING"){//Recieved message "GETSTRING" from RPi     
       strcpy(text, a.c_str()); //Copy string into character array
       radio.write(text, sizeof(text)) ;
-       //while (Serial.available()) {
-      Serial.println("We sent our message: "+ a) ;
-      // }
+      //while (Serial.available()) {
+      Serial.println("We sent our message: hehe") ;
+      //}
     }
     
   }

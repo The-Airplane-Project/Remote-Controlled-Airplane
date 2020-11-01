@@ -18,15 +18,15 @@
     <ClCompile Include="serial_esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Serial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamepad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SerialClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamepad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

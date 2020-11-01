@@ -1,12 +1,17 @@
-
 // CppPrototyping.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Checkout https://github.com/roblambell/XboxOneController/blob/master/Sample%20App/XboxController.cpp
-#include <Windows.h>
-#include <iostream>
-#include <Xinput.h>
-#pragma comment (lib, "xinput.lib")
-#include <cstdlib>
-#include <string>
+//#include <Windows.h>
+
+//#ifndef GAMEPAD
+//#define GAMEPAD
+//#endif
+//#include <Windows.h>
+//#include <iostream>
+//#include <Xinput.h>
+//#pragma comment (lib, "xinput.lib")
+//#include <cstdlib>
+//#include <string>
+
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
@@ -18,13 +23,11 @@
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
-#ifndef DEFAULT_DEADZONE
+//#ifndef DEFAULT_DEADZONE
 //#define XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  7849
 //#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
-#define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
-#endif 
-
-
+//#define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
+//#endif
 
 class Gamepad {
 private:
@@ -38,7 +41,7 @@ private:
 public:
     Gamepad() {
         deadzoneX = 0.05f;
-        deadzoneY = 0.02f;
+        deadzoneY = 0.05f;
     }
     Gamepad(float dzX, float dzY) : deadzoneX(dzX), deadzoneY(dzY) {}
     float leftStickX;
@@ -66,9 +69,6 @@ XINPUT_GAMEPAD* Gamepad::GetState()
 {
     return &state.Gamepad;
 }
-
-
-   
 
 bool Gamepad::connect() {
     DWORD dwResult;
@@ -132,7 +132,13 @@ bool Gamepad::Refresh()
     }
     return false;
 }
-
+enum joystick {
+    LeftStickX,
+    LeftStickY,
+    RightStickY,
+    Rudder,
+    Buttons
+};
 void Gamepad::vibrate(int magnitude) {
     XINPUT_VIBRATION vibration;
     ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
@@ -147,9 +153,9 @@ bool Gamepad::IsPressed(WORD button)
 }
 
 void Gamepad::encode() {
-	msg[0] = uint8_t(leftStickX * 90 + 90); //leftX
-	msg[1] = uint8_t(leftStickY * 180 + 90); //leftY
-	msg[2] = uint8_t(rightStickY * 180 + 90); //rightY
+	msg[LeftStickX] = uint8_t(leftStickX * 90 + 90); //leftX 0 to 180
+	msg[LeftStickY] = uint8_t(leftStickY * 90 + 90); //leftY 0 to 180
+	msg[RightStickY] = uint8_t(rightStickY * 120 + 120); //rightY  0 to 240
 	uint8_t rudder = 255;
 
 	//left trigger 0 -> 89
@@ -166,7 +172,7 @@ void Gamepad::encode() {
 	{
 		rudder = 90;
 	}
-	msg[3] = rudder;
+	msg[Rudder] = rudder;
 
 	//bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
 	//LB   RB   view  selec  X     Y   A    B
@@ -206,13 +212,11 @@ void Gamepad::encode() {
 	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0) {
 		buttons += 1;
 	}
-	msg[4] = buttons;
-
-
+	msg[Buttons] = buttons;
  }
-/*
-#ifndef MAIN
 
+//#ifndef MAIN
+/*
 using std::cout;
 using std::endl;
 
@@ -242,7 +246,6 @@ int main()
 
 
 
-}
-#endif // !1
+}*/
+//#endif // !1
 
-*/

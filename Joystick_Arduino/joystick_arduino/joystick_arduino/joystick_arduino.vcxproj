@@ -139,11 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gamepad.cpp" />
     <ClCompile Include="serial_esp.cpp" />
-    <ClCompile Include="Serial.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gamepad.h" />
+    <ClInclude Include="Serial.h" />
     <ClInclude Include="SerialClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

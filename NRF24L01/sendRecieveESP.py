@@ -50,8 +50,7 @@ while True:
     string = ""
 
     for n in receivedMessage:
-        if (n >= 32 and n <= 126):
-            string += chr(n)
+        string += str(ord(chr(n)))
     print("Our received message decodes to: {}".format(string))
 
     radio.stopListening()

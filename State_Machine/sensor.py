@@ -3,6 +3,7 @@ import sys
 import time
 import FaBo9Axis_MPU9250
 import Adafruit_BMP.BMP085 as BMP085
+import numpy as np
 
 import csv
 from .ahrs import MadgwickAHRS
@@ -72,3 +73,12 @@ class I2C_sensors:
         ahrs.update(a,b,c)
         ahrs.
 
+        g = np.array([self.convertToRad(float(self.gyro['x'])),self.convertToRad(float(self.gyro['y'])),self.convertToRad(float(self.gyro['z']))])
+        a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])])
+        m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])])
+        ahrs.update(g,a,m)
+        [self.row, self.yaw, self.pitch] =ahrs.Quaternion.to_euler123()
+
+    def convertToRad(self, degree):
+        pi = 3.1416
+        return degree*pi/180

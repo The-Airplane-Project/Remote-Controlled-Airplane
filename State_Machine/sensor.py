@@ -1,4 +1,5 @@
-# Sets up gyro, altimeter, and
+# Sets up IMU, altimeter, and file write
+# Written by Steven Feng, Oct 28, 2020
 import sys
 import time
 import FaBo9Axis_MPU9250
@@ -13,6 +14,8 @@ from datetime import datetime, date
 
 class I2C_sensors:
     def __init__(self):
+        self.refresh_time = 0.050 #20 hz
+
         #IMU raw values
         self.accel = {}
         self.gyro= {}
@@ -24,7 +27,8 @@ class I2C_sensors:
         #altimeter angle
         self.altitude = 0
         self.temperature = 0
-
+        self.prev_altitude = 0
+        self.vertical_speed = 0
         #file name for output (will be sequentially generated)
         self.filename = ''
 
@@ -41,7 +45,8 @@ class I2C_sensors:
         self.mag = mpu9250.readMagnet()
 
         self.altitude = round(altimeter.read_pressure(),2)
-
+        self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
+        self.prev_altitude = self.altitude
 
     def calibration(selfs):
         #calibrate here
@@ -70,11 +75,9 @@ class I2C_sensors:
 
     def convertSensor(self,ahrs):
         #this function uses AHRS and Kalman filter to convert sensor readings to euler angles
-
-
-        g = np.array([self.convertToRad(float(self.gyro['x'])),self.convertToRad(float(self.gyro['y'])),self.convertToRad(float(self.gyro['z']))])
-        a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])])
-        m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])])
+        g = np.array([self.convertToRad(float(self.gyro['x'])),self.convertToRad(float(self.gyro['y'])),self.convertToRad(float(self.gyro['z']))], dtype=float).flatten()
+        a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])], dtype=float).flatten()
+        m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
         ahrs.update(g,a,m)
         [self.row, self.yaw, self.pitch] =ahrs.Quaternion.to_euler123()
 

@@ -9,6 +9,8 @@ Nov 1, 2020
   * ESC
 * Radio
   * NRF24 module
+  * Logic for button press (only send button press signal if it's pressed, then released)
+  * contains logic for state change
 * I2C Sensor
   * Altimeter
   * IMU

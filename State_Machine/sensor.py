@@ -27,7 +27,7 @@ class I2C_sensors:
         #file name for output (will be sequentially generated)
         self.filename = ''
 
-        self.ahrs = MadgwickAHRS
+        ahrs = MadgwickAHRS
     #initiate sensors
     def set_up_Sensors(self):
         self.altimeter = BMP085.BMP085()
@@ -67,7 +67,8 @@ class I2C_sensors:
             file_writer.writerow([now, self.altitude,self.temperature, self.roll, self.pitch, self.yaw])
             return
 
-    def convertSensor(self):
+    def convertSensor(self,ahrs):
         #this function uses AHRS and Kalman filter to convert sensor readings to euler angles
-
+        ahrs.update(a,b,c)
+        ahrs.
 

@@ -1,15 +1,18 @@
 #Use with RPi
-#Ayush Ghosh Oct 13, 2020
-import RPi.GPIO as GPIO
+#By Ayush and Steven
+#import pigpio as GPIO
 from lib_nrf24 import NRF24
 import time
 import spidev
+import pigpio
 
-GPIO.setmode(GPIO.BCM)
+pi = pigpio.pi()
+#pi.set_mode(0, pigpio.OUTPUT)
+#GPIO.setmode(GPIO.BCM)
 
 pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
 
-radio = NRF24(GPIO, spidev.SpiDev())
+radio = NRF24(pi, spidev.SpiDev())
 radio.begin(0, 17)
 
 radio.setPayloadSize(32)

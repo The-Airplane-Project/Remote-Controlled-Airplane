@@ -12,8 +12,13 @@ pi = pigpio.pi()
 
 pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
 
+<<<<<<< HEAD
 radio = NRF24(pi, spidev.SpiDev())
 radio.begin(0, 17)
+=======
+radio = NRF24(GPIO, spidev.SpiDev())
+radio.begin(0, 25)
+>>>>>>> 6de23bf2e12823ffa2a0fb36fcfd359a76b329b9
 
 radio.setPayloadSize(32)
 radio.setChannel(0x76)

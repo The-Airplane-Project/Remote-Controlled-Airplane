@@ -36,7 +36,7 @@ void loop(void){
   radio.startListening() ;
   //Serial.println("Starting loop. Radio on.") ;
   
-  char receivedMessage[32] = {0} ;
+  char receivedMessage[6] = {0} ;
 
  int j = 0;
  while(Serial.available())
@@ -56,7 +56,7 @@ void loop(void){
     
     String stringMessage(receivedMessage) ;
     //String a = "123456";
-    if (stringMessage == "GETSTRING"){//Recieved message "GETSTRING" from RPi     
+    if (stringMessage == "1423"){//Recieved message "1423" from RPi     
       ///strcpy(text, a.c_str()); //Copy string into character array
       radio.write(joyMsg, sizeof(joyMsg)) ;
       //while (Serial.available()) {

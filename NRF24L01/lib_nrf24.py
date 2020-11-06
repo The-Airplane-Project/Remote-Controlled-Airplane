@@ -26,7 +26,7 @@
 
 import sys
 import time
-#import pigpio
+import pigpio
 
 if __name__ == '__main__':
     print (sys.argv[0], 'is an importable module:')

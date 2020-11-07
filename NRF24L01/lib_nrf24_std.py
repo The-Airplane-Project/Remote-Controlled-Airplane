@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-## This library has been converted to allow the Pigpio library support. Ayush Ghosh, Steven Feng, Nov 2020 
+
 
 # This file lib_nrf24.py is a slightly tweaked version of Barraca's "pynrf24".
 
@@ -26,7 +26,6 @@
 
 import sys
 import time
-import pigpio
 
 if __name__ == '__main__':
     print (sys.argv[0], 'is an importable module:')
@@ -196,9 +195,6 @@ class NRF24:
         self.dynamic_payloads_enabled = False #*< Whether dynamic payloads are enabled.
         self.ack_payload_length = 5 #*< Dynamic size of pending ack payload.
         self.pipe0_reading_address = None #*< Last address set on pipe 0 for reading.
-        self.GPIO_HIGH = 1
-        self.GPIO_LOW = 0
-        self.RPI_REVISION = 16
 
     def ce(self, level):
         if self.ce_pin == 0:
@@ -207,9 +203,9 @@ class NRF24:
         # Some RF24 modes may NEED control over CE.
         # non-powerdown, fixed PTX or RTX role, dynamic payload size & ack-payload:    does NOT need CE.
         if level == NRF24.HIGH:
-            self.GPIO.write(self.ce_pin, self.GPIO_HIGH)
+            self.GPIO.output(self.ce_pin, self.GPIO.HIGH)
         else:
-            self.GPIO.write(self.ce_pin, self.GPIO_LOW)
+            self.GPIO.output(self.ce_pin, self.GPIO.LOW)
         return
 
 
@@ -379,7 +375,7 @@ class NRF24:
         self.ce_pin = ce_pin
 
         if ce_pin:
-            self.GPIO.set_mode(self.ce_pin, pigpio.OUTPUT)
+            self.GPIO.setup(self.ce_pin, self.GPIO.OUT)
 
         time.sleep(5 / 1000000.0)
 
@@ -491,14 +487,14 @@ class NRF24:
 
         # Allons!
         if self.ce_pin:
-            if self.RPI_REVISION > 0: #MANUALLY PLUG IN REVISION NUMBER HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                self.ce(self.GPIO_HIGH)
+            if self.GPIO.RPI_REVISION > 0:
+                self.ce(self.GPIO.HIGH)
                 time.sleep(10 / 1000000.0)
-                self.ce(self.GPIO_LOW)
+                self.ce(self.GPIO.LOW)
             else:
-                # virtGPIO is slower. A 10 uSec pulse is better done with gpioTrigger():
-                gpio_trigger(self.ce_pin, 0.01, 1)
-                self.GPIO.pulseOut(self.ce_pin, self.GPIO_HIGH, 10) 
+                # virtGPIO is slower. A 10 uSec pulse is better done with pulseOut():
+                self.GPIO.pulseOut(self.ce_pin, self.GPIO.HIGH, 10)
+
 
 
     def getDynamicPayloadSize(self):

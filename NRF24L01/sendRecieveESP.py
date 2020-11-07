@@ -16,32 +16,6 @@ logging.basicConfig(filename='timeout_test.log', encoding='utf-8', level=logging
 localtime = time.asctime( time.localtime(time.time()) )
 logging.debug('%s: Starting program', localtime)
 while True:
-<<<<<<< HEAD
-    start = time.time()
-    radio.write(message)
-    print("Sent the message: {}".format(message))
-    radio.startListening()
-    
-    while not radio.available(0):
-        time.sleep(1/100)
-        if time.time() - start > 2:
-            print("Timed out.")
-            break
-
-    receivedMessage = []
-    radio.read(receivedMessage, radio.getDynamicPayloadSize())
-    print("Received: {}".format(receivedMessage))
-
-    print("Translating our received Message into unicode characters...")
-    string = ""
-
-    for n in receivedMessage:
-        string += str(ord(chr(n)))
-    print("Our received message decodes to: {}".format(string))
-
-    radio.stopListening()
-    time.sleep(0.1)
-=======
 	error_count = 0
 	pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
 	
@@ -103,4 +77,3 @@ while True:
 		time.sleep(0.1)
 	
 	radio.end()
->>>>>>> radio_test

@@ -1,5 +1,5 @@
 #code adopted from https://github.com/morgil/madgwick_py/blob/master/madgwickahrs.py
-
+#Adopted and integrated by Steven Feng, Oct 30, 2020
 import warnings
 import numpy as np
 from numpy.linalg import norm
@@ -36,9 +36,9 @@ class MadgwickAHRS:
         """
         q = self.quaternion
 
-        gyroscope = np.array(gyroscope, dtype=float).flatten()
-        accelerometer = np.array(accelerometer, dtype=float).flatten()
-        magnetometer = np.array(magnetometer, dtype=float).flatten()
+        #gyroscope = np.array(gyroscope, dtype=float).flatten()
+        #accelerometer = np.array(accelerometer, dtype=float).flatten()
+        #magnetometer = np.array(magnetometer, dtype=float).flatten()
 
         # Normalise accelerometer measurement
         if norm(accelerometer) is 0:

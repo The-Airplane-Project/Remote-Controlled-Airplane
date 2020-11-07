@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-from state import State
+#By Steven Feng Oct 21, 2020
+from .state import State
 import time
 import sys
 #TODO: Implement autonomous states

@@ -58,7 +58,7 @@ class I2C_sensors:
         #generate log file based on generation date
         now = datetime.now()
         date_time = now.strftime("%m-%d-%-%H-%M-%S") #TODO: check rosbag timestamp format
-        self.filename = str(date_time)+'.csv'
+        self.filename = 'i2c_sensor'+str(date_time)+'.csv'
         with open (self.filename, mode='w') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
             file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])
@@ -73,14 +73,30 @@ class I2C_sensors:
             file_writer.writerow([now, self.altitude,self.temperature, self.roll, self.pitch, self.yaw])
             return
 
-    def convertSensor(self,ahrs):
+    def convertSensor(self):
         #this function uses AHRS and Kalman filter to convert sensor readings to euler angles
         g = np.array([self.convertToRad(float(self.gyro['x'])),self.convertToRad(float(self.gyro['y'])),self.convertToRad(float(self.gyro['z']))], dtype=float).flatten()
         a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])], dtype=float).flatten()
         m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
-        ahrs.update(g,a,m)
-        [self.row, self.yaw, self.pitch] =ahrs.Quaternion.to_euler123()
+        self.ahrs.update(g,a,m)
+        [self.row, self.yaw, self.pitch] =self.ahrs.Quaternion.to_euler123()
 
     def convertToRad(self, degree):
         pi = 3.1416
         return degree*pi/180
+
+#test program
+if __name__ == '__main__':
+    sensors = I2C_sensors()
+    sensors.set_up_Sensors()
+    sensors.calibration()
+    sensors.createLogFile()
+    while (1):
+        sensors.readData()
+        sensors.convertSensor()
+        print("yaw: %s" % str(sensors.yaw))
+        print("row: %s" % str(sensors.row))
+        print("pitch: %s" % str(sensors.pitch))
+        print("altitude: %s" % str(sensors.altitude))
+        sensors.writeToFile()
+        time.sleep(0.1)

@@ -88,17 +88,14 @@ class ranger:
          self.pi.set_mode(self._trig, self._trig_mode)
          self.pi.set_mode(self._echo, self._echo_mode)
 
-   def createLogFile(self, filename):
+   #def createLogFile(self, filename):
 
    # generate random file name
 
-   def writeToFile(self, filename):
+   #def writeToFile(self, filename):
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 91fa4afd64fa180d0484e924c939a303918dd530
 if __name__ == "__main__":
 
    import time

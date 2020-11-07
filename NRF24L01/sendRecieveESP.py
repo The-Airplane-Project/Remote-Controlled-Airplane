@@ -13,7 +13,8 @@ MAX_PKG_SIZE = 6
 pi = pigpio.pi()
 
 logging.basicConfig(filename='timeout_test.log', encoding='utf-8', level=logging.DEBUG)
-
+localtime = time.asctime( time.localtime(time.time()) )
+logging.debug('%s: Starting program', localtime)
 while True:
 	error_count = 0
 	pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]

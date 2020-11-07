@@ -23,7 +23,6 @@
 #    GNU General Public License for more details.
 #
 
-
 import sys
 import time
 import pigpio

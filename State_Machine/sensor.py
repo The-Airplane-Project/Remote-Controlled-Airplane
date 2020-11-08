@@ -79,7 +79,11 @@ class I2C_sensors:
         a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])], dtype=float).flatten()
         m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
         self.ahrs.update(g,a,m)
-        [self.row, self.yaw, self.pitch] =self.ahrs.quaternion.to_euler123()
+        [self.roll, self.yaw, self.pitch] =self.ahrs.quaternion.to_euler123()
+        self.roll = self.convertToRad(self.roll)
+        self.yaw = self.convertToRad(self.yaw)
+        self.pitch = self.convertToRad(self.pitch)
+
 
     def convertToRad(self, degree):
         pi = 3.1416
@@ -95,7 +99,7 @@ if __name__ == '__main__':
         sensors.readData()
         sensors.convertSensor()
         print("yaw: %s" % str(sensors.yaw))
-        print("row: %s" % str(sensors.row))
+        print("roll: %s" % str(sensors.roll))
         print("pitch: %s" % str(sensors.pitch))
         print("altitude: %s" % str(sensors.altitude))
         sensors.writeToFile()

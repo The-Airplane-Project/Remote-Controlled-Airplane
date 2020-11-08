@@ -7,7 +7,7 @@ import Adafruit_BMP.BMP085 as BMP085
 import numpy as np
 
 import csv
-from .ahrs import MadgwickAHRS
+from ahrs import MadgwickAHRS
 from datetime import datetime, date
 
 
@@ -32,19 +32,19 @@ class I2C_sensors:
         #file name for output (will be sequentially generated)
         self.filename = ''
 
-        ahrs = MadgwickAHRS
-    #initiate sensors
-    def set_up_Sensors(self):
+        self.ahrs = MadgwickAHRS()
+    
+    
         self.altimeter = BMP085.BMP085()
         self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
 
     #read sensor data raw
     def readData(self):
-        self.accel = mpu9250.readAccel()
-        self.gyro = mpu9250.readGyro()
-        self.mag = mpu9250.readMagnet()
+        self.accel = self.mpu9250.readAccel()
+        self.gyro = self.mpu9250.readGyro()
+        self.mag = self.mpu9250.readMagnet()
 
-        self.altitude = round(altimeter.read_pressure(),2)
+        self.altitude = round(self.altimeter.read_pressure(),2)
         self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
         self.prev_altitude = self.altitude
 
@@ -79,7 +79,7 @@ class I2C_sensors:
         a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])], dtype=float).flatten()
         m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
         self.ahrs.update(g,a,m)
-        [self.row, self.yaw, self.pitch] =self.ahrs.Quaternion.to_euler123()
+        [self.row, self.yaw, self.pitch] =self.ahrs.quaternion.to_euler123()
 
     def convertToRad(self, degree):
         pi = 3.1416
@@ -88,7 +88,7 @@ class I2C_sensors:
 #test program
 if __name__ == '__main__':
     sensors = I2C_sensors()
-    sensors.set_up_Sensors()
+    
     sensors.calibration()
     sensors.createLogFile()
     while (1):

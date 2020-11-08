@@ -80,14 +80,18 @@ class I2C_sensors:
         m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
         self.ahrs.update(g,a,m)
         [self.roll, self.yaw, self.pitch] =self.ahrs.quaternion.to_euler123()
-        self.roll = self.convertToRad(self.roll)
-        self.yaw = self.convertToRad(self.yaw)
-        self.pitch = self.convertToRad(self.pitch)
+        self.roll = round(self.convertToDeg(self.roll))
+        self.yaw = round(self.convertToDeg(self.yaw))
+        self.pitch = round(self.convertToDeg(self.pitch))
 
 
     def convertToRad(self, degree):
         pi = 3.1416
         return degree*pi/180
+
+    def convertToDeg(self, rad):
+        pi = 3.1416
+        return rad*180/pi
 
 #test program
 if __name__ == '__main__':

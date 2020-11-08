@@ -81,19 +81,22 @@ class radio_comm:
     def read_from_radio(self):
         #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
         self.start = time.time()
-        
+
         self.radio.startListening()
         
         #Wating for incomming message
         while not self.radio.available(0):
             time.sleep(1/100)
             if time.time() - start > 2:
+            	self.start = time.time()
                 #print("Timed out.")
                 self.error_count += 1
                 if self.error_count > 1: #it has waited for 4 secs now
                     self.error_count = 0
-                    ##SIGNAL EMERGENCY NOW____and perform softreset from emergency state______________________   
+                    ##SIGNAL EMERGENCY NOW____and perform softreset from emergency state______________________
+                    return False  
         
+        self.error_count = 0
         self.previous_Msg = self.receivedMessage
         self.receivedMessage = [255, 255, 255, 255, 255, 255]
         #update recievedMessage with radio packet
@@ -186,4 +189,21 @@ class radio_comm:
     def stop_radio(self):
         #stops the radio without changing data variables
         radio.end()
-        return True
+        return 
+
+if __name__ == "__main__":
+	radio_test = radio_comm_test()
+
+  	#bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
+    #LB   RB   view  selec  X     Y   A    B
+  	while True:
+
+        [radio_valid, x] = radio_test.decode_message()
+        
+        print(radio_test.button_event_state)
+        if (radio_valid):
+            print ("test works")
+            print (x)
+        if(not radio_valid):
+            print("False state")
+            print (x)

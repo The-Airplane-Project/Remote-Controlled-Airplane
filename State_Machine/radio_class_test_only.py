@@ -110,12 +110,12 @@ if __name__ == "__main__":
     while True:
         btn_num = int(input("Enter num: "))
         radio_test.receivedMessage = [10, 100, 110, 90, btn_num, 80]
-        [state, x] = radio_test.decode_message()
-    
+        [radio_valid, x] = radio_test.decode_message()
+        
         print(radio_test.button_event_state)
-        if (state):
+        if (radio_valid):
             print ("test works")
             print (x)
-        if(not state):
+        if(not radio_valid):
             print("False state")
             print (x)

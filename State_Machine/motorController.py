@@ -60,11 +60,11 @@ class motorController:
     def aileron_value_to_angle_conversion (self, aileronValue):
         #compute the aileron left and aileron right angles
         aileronleft = +aileronValue  #replace this with actual algorithm
-<<<<<<< HEAD
+
         aileronright = 180 -aileronValue  #replacethis with actual algorithm
-=======
-        aileronright = -aileronValue  #replacethis with actual algorithm
->>>>>>> 91fa4afd64fa180d0484e924c939a303918dd530
+
+        #aileronright = -aileronValue  #replacethis with actual algorithm
+
 
         return aileronleft, aileronright
 

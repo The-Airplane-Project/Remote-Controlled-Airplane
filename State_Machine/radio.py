@@ -180,9 +180,9 @@ class radio_comm:
     def soft_reset(self):
         #restart the radio without changing member variables
         #maybe implement this in the emergency state cause its just these following functions
-        #self.radio.stopListening()
-        #self.radio_stop()
-        #self.start_radio()
+        self.radio.stopListening()
+        self.radio_stop()
+        self.start_radio()
         #self.read_from_radio()
         a = 1
 
@@ -196,14 +196,20 @@ if __name__ == "__main__":
 
   	#bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
     #LB   RB   view  selec  X     Y   A    B
-  	while True:
-
-        [radio_valid, x] = radio_test.decode_message()
+    radio_test.start_radio()
+    while True:
+  		
+  		while radio_test.read_from_radio():
+  			
+        	[radio_valid, x] = radio_test.decode_message()
         
-        print(radio_test.button_event_state)
-        if (radio_valid):
-            print ("test works")
-            print (x)
-        if(not radio_valid):
-            print("False state")
-            print (x)
+    	    print(radio_test.button_event_state)
+        	if (radio_valid):
+            	print ("test works")
+            	print (x)
+        	if(not radio_valid):
+            	print("False state")
+            	print (x)
+    
+    	radio_test.soft_reset()
+    	#performing soft reset

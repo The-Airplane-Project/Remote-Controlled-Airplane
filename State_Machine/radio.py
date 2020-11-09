@@ -1,8 +1,6 @@
 #by Ayush and Steven Nov 6, 2020
 #This class will handle communication between radio, and does proper decoding
 
-#from datetime import datetime, date
-#import motor controller class, sensor class, statemachine class, ultrasound class, plane.py
 from lib_nrf24 import NRF24
 import time
 import spidev
@@ -42,10 +40,7 @@ class radio_comm:
         self.error_count = 0
         self.pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
         
-        
-        #self.receivedMessage = [255,255,255,255, 255, 255]
         self.start = time.time()
-        #self.previous_Msg = [255,255,255,255,255,255]
         
         self.button_event_state = [0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -66,6 +61,7 @@ class radio_comm:
         self.neg_throttle_flag_1 = False
         self.pos_throttle_flag_2 = False
         self.cen_throttle_flag_3 = False
+
     def start_radio(self):
         self.radio = NRF24(self.pi, spidev.SpiDev())
         self.radio.begin(0, 17)
@@ -80,15 +76,12 @@ class radio_comm:
         self.radio.openReadingPipe(1, self.pipes[1])
         self.radio.printDetails()
         self.counting_to_soft_reset = 0
-        return True
-    def read_from_radio(self):
 
-        #message = list("1234")
-        #while len(message) < self.MAX_PKG_SIZE:
-        #    message.append(0)
-        #self.radio.write(message)
-        #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
+    def read_from_radio(self):
+        #Write to arduino first
         self.send_message("1234")
+
+        #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
         self.start = time.time()
         self.radio.startListening()
         
@@ -106,13 +99,13 @@ class radio_comm:
                 break
         
         self.receivedMessage = []
+
         #update recievedMessage with radio packet
         self.radio.read(self.receivedMessage, self.radio.getDynamicPayloadSize())
         #print("Received: {}".format(self.receivedMessage))
         self.radio.stopListening()
         if (self.receivedMessage == [0, 0, 0, 0, 0, 0]):
             self.receivedMessage = []
-        #self.previous_Msg = receivedMessage
         return True
 
     def decode_message(self):
@@ -137,14 +130,14 @@ class radio_comm:
         if self.receivedMessage == []:
             self.counting_to_soft_reset += 1
             if (self.counting_to_soft_reset >= 2):
-                return False, []
+                return False, [] #Softreset now and signal emergency
             else:
                 return True, []
 
         
 
         btns_value = int(self.receivedMessage[4])
-        print(btns_value)
+
         #saving trigger event states from each button
         self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
         self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
@@ -212,45 +205,35 @@ if __name__ == "__main__":
     from motorController import motorController
     pi = pigpio.pi()
     motors = motorController(25, 22, 5, 24, 21, pi)
-    #aileronValue_ = 90
-    #rudderAngle_ = 90
-    #elevatorAngle_ = 90
-    #escValue_ = 0
-    #trimoffset = 0
-    
+
     radio_test = radio_comm(pi)
 
-    #bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
-    #LB   RB   view  selec  X     Y   A    B
-    z = radio_test.start_radio()
+    #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
+    #LB   RB   view  selec  X    Y    A    B
+    radio_test.start_radio()
     motors.ESC.arm()
     while True:
         radio_valid = True
         while (radio_valid):
             t = radio_test.read_from_radio()
             #t = radio_test.read_from_radio()
-            time.sleep(0.1)
+            time.sleep(0.09)
 
             [radio_valid, x] = radio_test.decode_message()
-            #radio_valid = 1
-            #print(radio_test.previous_Msg)
+            
             if (radio_valid):
-                #print ("test works")
                 print(x)
                 if (x != []):
-                #servo.write_motor(aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset)
+                    #servo.write_motor(aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset)
                     motors.write_motor(x[0], x[1], x[2], x[3], x[4])
-                    #time.sleep(0.1)
-                a = 1
+
             if (not radio_valid):
                 print("Radio not decoded")
-                #print (x)
     
-        
+        #Stop motors
         print("Stopping motors")
         motors.stop_all_servos()
         motors.ESC.stop()
+        #performing soft reset
         print ("performing soft reset")
         radio_test.soft_reset()
-
-        #performing soft reset

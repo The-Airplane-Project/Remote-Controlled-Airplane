@@ -1,5 +1,4 @@
 #By Ayush and Steven
-
 import pigpio
 import time
 import sys

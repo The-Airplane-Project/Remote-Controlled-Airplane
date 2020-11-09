@@ -2,8 +2,8 @@
 
 import pigpio
 import time
-from servo import Servo
-from servo import ESC
+from motor import Servo
+from motor import ESC
 class motorController:
     def __init__(self, ailLeftPin, ailRightPin, elevPin, rudPin, escPin, pwm):
         self.aileronLeft = Servo(ailLeftPin, 0, pwm)
@@ -63,9 +63,6 @@ class motorController:
 
         aileronright = 180 -aileronValue  #replacethis with actual algorithm
 
-        #aileronright = -aileronValue  #replacethis with actual algorithm
-
-
         return aileronleft, aileronright
 
 
@@ -74,7 +71,6 @@ class motorController:
     #could use std_deviation to calculate, or jsut a hard offset.
     def trim_conversion(self, elevatorAngle_):
         #do some calculations
-
         return elevatorAngle_
 
     def stop_all_servos(self):

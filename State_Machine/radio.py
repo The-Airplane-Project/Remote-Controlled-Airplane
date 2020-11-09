@@ -31,6 +31,8 @@ class joy_button:
             else:
                 self.trigger_event = False
         return self.trigger_event
+    def get_pressed():
+        return self.is_pressed()
 
 class radio_comm:
     def __init__(self, pi):
@@ -40,16 +42,15 @@ class radio_comm:
         self.error_count = 0
         self.pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
         
-        self.radio = NRF24(pi, spidev.SpiDev())
         
-
+        #self.receivedMessage = [255,255,255,255, 255, 255]
         self.start = time.time()
-        self.previous_Msg = [255,255,255,255,255,255]
-        self.receivedMessage = [255, 255, 255, 255, 255, 255]
+        #self.previous_Msg = [255,255,255,255,255,255]
+        
         self.button_event_state = [0, 0, 0, 0, 0, 0, 0, 0]
 
         #initialize buttons
-        #bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
+        #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
         #LB   RB   view  selec  X     Y   A    B
 
         self.joy_LB = joy_button()
@@ -60,12 +61,13 @@ class radio_comm:
         self.joy_Y = joy_button()
         self.joy_A = joy_button()
         self.joy_B = joy_button()
-		
+        
         #Arming flags
         self.neg_throttle_flag_1 = False
         self.pos_throttle_flag_2 = False
         self.cen_throttle_flag_3 = False
     def start_radio(self):
+        self.radio = NRF24(self.pi, spidev.SpiDev())
         self.radio.begin(0, 17)
         self.radio.setPayloadSize(self.MAX_PKG_SIZE)
         self.radio.setChannel(0x76)
@@ -77,32 +79,40 @@ class radio_comm:
         self.radio.openWritingPipe(self.pipes[0])
         self.radio.openReadingPipe(1, self.pipes[1])
         self.radio.printDetails()
-
+        self.counting_to_soft_reset = 0
+        return True
     def read_from_radio(self):
-        #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
-        self.start = time.time()
 
+        #message = list("1234")
+        #while len(message) < self.MAX_PKG_SIZE:
+        #    message.append(0)
+        #self.radio.write(message)
+        #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
+        self.send_message("1234")
+        self.start = time.time()
         self.radio.startListening()
         
         #Wating for incomming message
         while not self.radio.available(0):
             time.sleep(1/100)
-            if time.time() - start > 2:
-            	self.start = time.time()
+            if time.time() - self.start > 2:
                 #print("Timed out.")
                 self.error_count += 1
-                if self.error_count > 1: #it has waited for 4 secs now
+                if self.error_count > 2: #it has waited for 4 secs now
                     self.error_count = 0
                     ##SIGNAL EMERGENCY NOW____and perform softreset from emergency state______________________
+                    self.radio.stopListening()
                     return False  
+                break
         
-        self.error_count = 0
-        self.previous_Msg = self.receivedMessage
-        self.receivedMessage = [255, 255, 255, 255, 255, 255]
+        self.receivedMessage = []
         #update recievedMessage with radio packet
         self.radio.read(self.receivedMessage, self.radio.getDynamicPayloadSize())
-        #print("Received: {}".format(receivedMessage))
+        #print("Received: {}".format(self.receivedMessage))
         self.radio.stopListening()
+        if (self.receivedMessage == [0, 0, 0, 0, 0, 0]):
+            self.receivedMessage = []
+        #self.previous_Msg = receivedMessage
         return True
 
     def decode_message(self):
@@ -124,37 +134,46 @@ class radio_comm:
         if self.receivedMessage == [255, 255, 255, 255, 255, 255]:
             return False, []
         
+        if self.receivedMessage == []:
+            self.counting_to_soft_reset += 1
+            if (self.counting_to_soft_reset >= 2):
+                return False, []
+            else:
+                return True, []
+
+        
 
         btns_value = int(self.receivedMessage[4])
-
+        print(btns_value)
         #saving trigger event states from each button
-        self.button_event_state[0] = self.joy_LB.state(btns_value >> 0 & 1)
-        self.button_event_state[1] = self.joy_RB.state(btns_value >> 1 & 1)
-        self.button_event_state[2] = self.joy_view.state(btns_value >> 2 & 1)
-        self.button_event_state[3] = self.joy_selec.state(btns_value >> 3 & 1)
-        self.button_event_state[4] = self.joy_X.state(btns_value >> 4 & 1)
-        self.button_event_state[5] = self.joy_Y.state(btns_value >> 5 & 1)
-        self.button_event_state[6] = self.joy_A.state(btns_value >> 6 & 1)
-        self.button_event_state[7] = self.joy_B.state(btns_value >> 7 & 1)
+        self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
+        self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
+        self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
+        self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
+        self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
+        self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
+        self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
+        self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
+        
 
         #Determine trim setting
         trim_offset = 0
-        if (self.button_event_state[0] and self.button_event_state[1]): # both LB RB buttons are true
+        if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
             trim_offset = 0
-        elif (self.button_event_state[0]): #LB pressed
+        elif (self.button_event_state[7]): #LB pressed
             trim_offset -= 1
-        elif (self.button_event_state[1]): #RB pressed
+        elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
-
+        
         #return aileron, rudder, elevator, escValue, trimoffset
         return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
 
     def send_message(self, msg):
         # grab variables from i2c_sensor, ultrasound, and send
         message = list(msg)
-        while len(message) < MAX_PKG_SIZE:
+        while len(message) < self.MAX_PKG_SIZE:
             message.append(0)
-        radio.write(message)
+        self.radio.write(message)
 
     def checkShouldArm(self):
         #checks right joystick values to determine if we should
@@ -180,36 +199,58 @@ class radio_comm:
     def soft_reset(self):
         #restart the radio without changing member variables
         #maybe implement this in the emergency state cause its just these following functions
-        self.radio.stopListening()
-        self.radio_stop()
+        self.stop_radio()
         self.start_radio()
         #self.read_from_radio()
-        a = 1
 
     def stop_radio(self):
         #stops the radio without changing data variables
-        radio.end()
-        return 
+        self.radio.end()
+        return True
 
 if __name__ == "__main__":
-	radio_test = radio_comm_test()
-
-  	#bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
-    #LB   RB   view  selec  X     Y   A    B
-    radio_test.start_radio()
-    while True:
-  		
-  		while radio_test.read_from_radio():
-  			
-        	[radio_valid, x] = radio_test.decode_message()
-        
-    	    print(radio_test.button_event_state)
-        	if (radio_valid):
-            	print ("test works")
-            	print (x)
-        	if(not radio_valid):
-            	print("False state")
-            	print (x)
+    from motorController import motorController
+    pi = pigpio.pi()
+    motors = motorController(25, 22, 5, 24, 21, pi)
+    #aileronValue_ = 90
+    #rudderAngle_ = 90
+    #elevatorAngle_ = 90
+    #escValue_ = 0
+    #trimoffset = 0
     
-    	radio_test.soft_reset()
-    	#performing soft reset
+    radio_test = radio_comm(pi)
+
+    #bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
+    #LB   RB   view  selec  X     Y   A    B
+    z = radio_test.start_radio()
+    motors.ESC.arm()
+    while True:
+        radio_valid = True
+        while (radio_valid):
+            t = radio_test.read_from_radio()
+            #t = radio_test.read_from_radio()
+            time.sleep(0.1)
+
+            [radio_valid, x] = radio_test.decode_message()
+            #radio_valid = 1
+            #print(radio_test.previous_Msg)
+            if (radio_valid):
+                #print ("test works")
+                print(x)
+                if (x != []):
+                #servo.write_motor(aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset)
+                    motors.write_motor(x[0], x[1], x[2], x[3], x[4])
+                    #time.sleep(0.1)
+                a = 1
+            if (not radio_valid):
+                print("Radio not decoded")
+                #print (x)
+    
+        
+        print("Stopping motors")
+        motors.stop_all_servos()
+        motors.ESC.stop()
+        print ("performing soft reset")
+        radio_test.soft_reset()
+
+        #performing soft reset

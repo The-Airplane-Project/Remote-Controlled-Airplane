@@ -2,15 +2,15 @@
 
 import pigpio
 import time
-from .servo import Servo
-
+from servo import Servo
+from servo import ESC
 class motorController:
     def __init__(self, ailLeftPin, ailRightPin, elevPin, rudPin, escPin, pwm):
         self.aileronLeft = Servo(ailLeftPin, 0, pwm)
         self.aileronRight = Servo(ailRightPin, 0, pwm)
         self.elevator = Servo(elevPin, 0, pwm)
         self.rudder = Servo(rudPin, 0, pwm)
-        self.ESC = Servo(escPin, 0, pwm) ## TODO: double check if I can actually do this
+        self.ESC = ESC(escPin, 0, pwm) ## TODO: double check if I can actually do this
 
         #trim
         self.trim_offset = 0
@@ -33,11 +33,11 @@ class motorController:
     #should be filtered at radio
 
     #ESC value should be written to 750 or less if not operated
-    def write_motor(self, aileronValue, rudderAngle_, elevatorAngle_, escValue_, trimoffset):
+    def write_motor(self, aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset):
         #compute needed motor angles
-        [self.aileronLeftAngle, self.aileronRightAngle] = self.aileron_value_to_angle_conversion(aileronValue)
+        [self.aileronLeftAngle, self.aileronRightAngle] = self.aileron_value_to_angle_conversion(aileronValue_)
         self.rudderAngle = rudderAngle_
-        self.elevatorAngle = self.trim_conversion(self.elevatorAngle)
+        self.elevatorAngle = self.trim_conversion(elevatorAngle_)
         self.escValue = escValue_*5+750 #since esc value is from 0-240 and we want it from 750 - 2000
 
         #trim
@@ -53,7 +53,7 @@ class motorController:
         self.aileronRight.set_angle(self.aileronRightAngle)
         self.elevator.set_angle(self.elevatorAngle)
         self.rudder.set_angle(self.rudderAngle)
-        self.ESC.set_pulse(self.escValue)
+        self.ESC.set_speed(self.escValue)
 
     ##TODO: write actual code for value to angle conversion
     # converts left joystick x value to actual angles on the left right aileron
@@ -77,13 +77,19 @@ class motorController:
 
         return elevatorAngle_
 
-    def arm_ESC(self):
-        self.ESC.set_pulse(0)
-        time.sleep(1)
-        self.ESC.set_pulse(self.escMax)
-        time.sleep(1)
-        self.ESC.set_pulse(self.escMin)
-        time.sleep(1)
+    def stop_all_servos(self):
+        self.aileronLeft.stop()
+        self.aileronRight.stop()
+        self.elevator.stop() 
+        self.rudder.stop()
 
-    def stop_ESC(self):
-        self.ESC.set_pulse(0)
+if __name__ == "__main__":
+    pwm = pigpio.pi()
+    servo = motorController(25, 22, 5, 24, 21, pwm)
+    aileronValue_ = 90
+    rudderAngle_ = 90
+    elevatorAngle_ = 90
+    escValue_ = 0
+    trimoffset = 0
+    servo.write_motor(aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset)
+    print ("lol")

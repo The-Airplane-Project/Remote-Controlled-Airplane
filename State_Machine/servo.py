@@ -12,8 +12,8 @@ class Servo:
         self.angle = angle
         self.pulse = self.angle_to_pulse(self.angle)
         self.pwm_ = pwm
-        pwm.set_mode(self.servo, pigpio.OUTPUT)
-        pwm.set_PWM_frequency(self.servo, 50)
+        self.pwm_.set_mode(self.servo, pigpio.OUTPUT)
+        self.pwm_.set_PWM_frequency(self.servo, 50)
 
     def reset(self):
         self.angle = 90
@@ -38,3 +38,26 @@ class Servo:
 
     def set_pulse(self, value):
         self.pwm_.set_servo_pulsewidth(self.servo, value)
+
+class ESC:
+    def __init__(self, pin, speed, pi):
+        self.esc = pin
+        self.speed = speed
+        self.pi = pi
+        self.pi.set_servo_pulsewidth(self.esc, 0) 
+        self.max_value = 2000
+        self.min_value = 750
+
+    def stop(self):
+        self.pi.set_servo_pulsewidth(self.esc, 0)
+
+    def arm(self):
+        self.pi.set_servo_pulsewidth(self.esc, 0)
+        time.sleep(1)
+        self.pi.set_servo_pulsewidth(self.esc, self.max_value)
+        time.sleep(1)
+        self.pi.set_servo_pulsewidth(self.esc, self.min_value)
+        time.sleep(1)
+
+    def set_speed(self, value):
+        self.pi.set_servo_pulsewidth(self.esc, value)

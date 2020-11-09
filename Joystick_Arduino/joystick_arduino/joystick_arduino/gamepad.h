@@ -174,7 +174,7 @@ void Gamepad::encode() {
 	}
 	msg[Rudder] = rudder;
 
-	//bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
+	//bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
 	//LB   RB   view  selec  X     Y   A    B
 	
 	uint8_t buttons = 0;

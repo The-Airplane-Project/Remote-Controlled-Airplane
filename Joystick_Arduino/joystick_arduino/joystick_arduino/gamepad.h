@@ -58,6 +58,7 @@ public:
     bool IsPressed(WORD);
     void vibrate(int magnitude);
 	void encode();
+	void convertToMotor();
 };
 
 int Gamepad::GetPort()
@@ -139,6 +140,12 @@ enum joystick {
     Rudder,
     Buttons
 };
+
+//This function will convert joystick code 
+void Gamepad::convertToMotor() {
+
+}
+
 void Gamepad::vibrate(int magnitude) {
     XINPUT_VIBRATION vibration;
     ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
@@ -214,6 +221,14 @@ void Gamepad::encode() {
 	}
 	msg[Buttons] = buttons;
  }
+
+
+
+
+
+
+
+
 
 //#ifndef MAIN
 /*

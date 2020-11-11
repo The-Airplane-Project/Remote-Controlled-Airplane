@@ -1,11 +1,10 @@
-from radio_class_test_only import radio_comm_test
-#from radio import radio_comm
+#from radio_class_test_only import radio_comm_test
+from motorController import motorController
+from radio import radio_comm
 
-#from motorController import motorController
+pi = pigpio.pi()
 
-#pi = pigpio.pi()
-radio = radio_comm_test()
-#radio = radio_comm(pi)
+motors = motorController(25, 22, 5, 24, 21, pi)
 
-
-#motors_obj = motorController()
+#radio = radio_comm_test()
+radio = radio_comm(pi)

@@ -9,10 +9,7 @@ import time
 class airplane:
     def __init__(self):
         self.state = IdleState()
-        #self.motors = motors_obj
-        #Initialize Radio Object (radio class)
-        #Initialize Sensor object (Sensor Class)
-        #Initialize Servos & Motor Class (MotorController Class)    
+          
     def on_event(self, event):
         self.state = self.state.on_event(event)
         return self.run_state()
@@ -22,7 +19,7 @@ class airplane:
     
 if __name__ == "__main__":
     drone = airplane()
-    state_str = drone.run_state()#Only running idle
+    state_str = drone.run_state() #Only running idle state
     while True:
         state_str = drone.on_event(state_str)
         

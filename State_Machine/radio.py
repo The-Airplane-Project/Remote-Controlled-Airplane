@@ -104,6 +104,7 @@ class radio_comm:
         self.radio.read(self.receivedMessage, self.radio.getDynamicPayloadSize())
         #print("Received: {}".format(self.receivedMessage))
         self.radio.stopListening()
+        time.sleep(0.09)
         if (self.receivedMessage == [0, 0, 0, 0, 0, 0]):
             self.receivedMessage = []
         return True

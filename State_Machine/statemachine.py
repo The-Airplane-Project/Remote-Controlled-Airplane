@@ -79,6 +79,7 @@ class StandbyState(State):
             #return aileron, rudder, elevator, escValue, trimoffset
             [success, msg_decode] = radio.decode_message()
             if (success):
+                motors.write_motor(msg_decode[0], msg_decode[1], msg_decode[2], 0, msg_decode[4])
                 time_out_counter += 1
                 if (radio.button_event_state[motorDisable]):
                     return "EngOffBtn"

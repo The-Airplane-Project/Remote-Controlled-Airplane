@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+#written by Ayush Ghosh and Steven Feng
+from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
+import sys
+import time
+
+##Starting point of the function
+
+class airplane:
+    def __init__(self):
+        self.state = IdleState()
+        #self.motors = motors_obj
+        #Initialize Radio Object (radio class)
+        #Initialize Sensor object (Sensor Class)
+        #Initialize Servos & Motor Class (MotorController Class)    
+    def on_event(self, event):
+        self.state = self.state.on_event(event)
+        return self.run_state()
+    
+    def run_state(self):
+        return self.state.run()
+    
+if __name__ == "__main__":
+    drone = airplane()
+    state_str = drone.run_state()#Only running idle
+    while True:
+        state_str = drone.on_event(state_str)
+        
+#    if (drone.on_event('EngOnBtn')):
+#
+#        print("System now waiting to arm motor")
+#
+#
+#    if (drone.on_event('Cruise')):
+#        print("System now flying!")
+#    else:
+#
+#    if (drone.on_event('Lost')):
+#        print("System")
+#    print(drone.state)
+#    
+#    time.sleep(1)
+#    drone.on_event('Signal')
+#    print(drone.state)
+    

@@ -194,6 +194,7 @@ class radio_comm:
         #maybe implement this in the emergency state cause its just these following functions
         self.stop_radio()
         self.start_radio()
+        self.counting_to_soft_reset = 0
         #self.read_from_radio()
 
     def stop_radio(self):

@@ -38,10 +38,11 @@ class radio_comm_test:
         self.previous_Msg = [255,255,255,255,255,255]
         self.receivedMessage = [255, 255, 255, 255, 255, 255]
         self.button_event_state = [0, 0, 0, 0, 0, 0, 0, 0]
-    
+        
+        self.counting_to_soft_reset = 0
         #initialize buttons
-        #bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
-        #LB   RB   view  selec  X     Y   A    B
+        #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
+        #LB   RB   view  selec  X    Y    A    B
     
         self.joy_LB = joy_button()
         self.joy_RB = joy_button()
@@ -76,28 +77,37 @@ class radio_comm_test:
         if self.receivedMessage == [255, 255, 255, 255, 255, 255]:
             return False, []
         
-    
+        if self.receivedMessage == []:
+            self.counting_to_soft_reset += 1
+            if (self.counting_to_soft_reset >= 2):
+                return False, [] #Softreset now and signal emergency
+            else:
+                return True, []
+
+        
+
         btns_value = int(self.receivedMessage[4])
-    
+
         #saving trigger event states from each button
-        self.button_event_state[0] = self.joy_LB.state(btns_value >> 0 & 1)
-        self.button_event_state[1] = self.joy_RB.state(btns_value >> 1 & 1)
-        self.button_event_state[2] = self.joy_view.state(btns_value >> 2 & 1)
-        self.button_event_state[3] = self.joy_selec.state(btns_value >> 3 & 1)
-        self.button_event_state[4] = self.joy_X.state(btns_value >> 4 & 1)
-        self.button_event_state[5] = self.joy_Y.state(btns_value >> 5 & 1)
-        self.button_event_state[6] = self.joy_A.state(btns_value >> 6 & 1)
-        self.button_event_state[7] = self.joy_B.state(btns_value >> 7 & 1)
-    
+        self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
+        self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
+        self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
+        self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
+        self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
+        self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
+        self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
+        self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
+        
+
         #Determine trim setting
         trim_offset = 0
-        if (self.button_event_state[0] and self.button_event_state[1]): # both LB RB buttons are true
+        if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
             trim_offset = 0
-        elif (self.button_event_state[0]): #LB pressed
+        elif (self.button_event_state[7]): #LB pressed
             trim_offset -= 1
-        elif (self.button_event_state[1]): #RB pressed
+        elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
-    
+        
         #return aileron, rudder, elevator, escValue, trimoffset
         return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
 
@@ -105,8 +115,8 @@ if __name__ == "__main__":
     
     radio_test = radio_comm_test()
     
-    #bit1 bit2 bit3  bit4   bit5 bit6 bit7 bit8
-    #LB   RB   view  selec  X     Y   A    B
+    #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
+    #LB   RB   view  selec  X    Y    A    B
     while True:
         btn_num = int(input("Enter num: "))
         radio_test.receivedMessage = [10, 100, 110, 90, btn_num, 80]

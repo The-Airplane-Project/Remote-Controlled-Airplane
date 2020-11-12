@@ -58,7 +58,8 @@ public:
     bool IsPressed(WORD);
     void vibrate(int magnitude);
 	void encode();
-	void convertToMotor();
+	float controllerCurve(float x);
+	void controllerToMotor();
 };
 
 int Gamepad::GetPort()
@@ -111,19 +112,19 @@ bool Gamepad::Refresh()
         float normLX = fmaxf(-1, (float)state.Gamepad.sThumbLX / 32767);
         float normLY = fmaxf(-1, (float)state.Gamepad.sThumbLY / 32767);
 
-        leftStickX = (abs(normLX) < deadzoneX ? 0 : (abs(normLX) - deadzoneX) * (normLX / abs(normLX)));
-        leftStickY = (abs(normLY) < deadzoneY ? 0 : (abs(normLY) - deadzoneY) * (normLY / abs(normLY)));
+        leftStickX = controllerCurve((abs(normLX) < deadzoneX ? 0 : (abs(normLX) - deadzoneX) * (normLX / abs(normLX))));
+        leftStickY = controllerCurve((abs(normLY) < deadzoneY ? 0 : (abs(normLY) - deadzoneY) * (normLY / abs(normLY))));
 
         if (deadzoneX > 0) leftStickX *= 1 / (1 - deadzoneX);
         if (deadzoneY > 0) leftStickY *= 1 / (1 - deadzoneY);
 
-        float normRX = fmaxf(-1, (float)state.Gamepad.sThumbRX / 32767);
+        //float normRX = fmaxf(-1, (float)state.Gamepad.sThumbRX / 32767);
         float normRY = fmaxf(-1, (float)state.Gamepad.sThumbRY / 32767);
 
-        rightStickX = (abs(normRX) < deadzoneX ? 0 : (abs(normRX) - deadzoneX) * (normRX / abs(normRX)));
-        rightStickY = (abs(normRY) < deadzoneY ? 0 : (abs(normRY) - deadzoneY) * (normRY / abs(normRY)));
+        //rightStickX = (abs(normRX) < deadzoneX ? 0 : (abs(normRX) - deadzoneX) * (normRX / abs(normRX)));
+        rightStickY = controllerCurve((abs(normRY) < deadzoneY ? 0 : (abs(normRY) - deadzoneY) * (normRY / abs(normRY))));
 
-        if (deadzoneX > 0) rightStickX *= 1 / (1 - deadzoneX);
+        //if (deadzoneX > 0) rightStickX *= 1 / (1 - deadzoneX);
         if (deadzoneY > 0) rightStickY *= 1 / (1 - deadzoneY);
 
         leftTrigger = (float)state.Gamepad.bLeftTrigger / 255;
@@ -134,15 +135,26 @@ bool Gamepad::Refresh()
     return false;
 }
 enum joystick {
+	Start,
     LeftStickX,
     LeftStickY,
     RightStickY,
     Rudder,
-    Buttons
+    Buttons,
+	End
 };
 
-//This function will convert joystick code 
-void Gamepad::convertToMotor() {
+//This function will give the curve
+float Gamepad::controllerCurve(float x) {
+	x = 0.4833 * x + 0.5342 * pow(x, 3);
+
+	if (x > 1) {
+		x = 1;
+	}
+	return x;
+}
+
+void Gamepad::controllerToMotor() {
 
 }
 
@@ -160,6 +172,8 @@ bool Gamepad::IsPressed(WORD button)
 }
 
 void Gamepad::encode() {
+	msg[Start] = 41; //ASCII for 'A' -->Start
+	msg[End] = 53;//ASCII for 'S' --> Stop
 	msg[LeftStickX] = uint8_t(leftStickX * 90 + 90); //leftX 0 to 180
 	msg[LeftStickY] = uint8_t(leftStickY * 90 + 90); //leftY 0 to 180
 	msg[RightStickY] = uint8_t(rightStickY * 120 + 120); //rightY  0 to 240
@@ -169,7 +183,7 @@ void Gamepad::encode() {
 	//right trigger 91 --> 180
 
 	if (leftTrigger > 0.05 && rightTrigger < 0.05) {
-		rudder = uint8_t(leftTrigger*90);
+		rudder = uint8_t(90-leftTrigger*90);
 	}
 	else if (rightTrigger >0.05  && leftTrigger<0.05)
 	{

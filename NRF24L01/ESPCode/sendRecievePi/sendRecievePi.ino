@@ -1,5 +1,5 @@
 //Use with ESP8266 Node-MCU
-//Ayush Ghosh Oct 13, 2020
+//By Ayush Ghosh and Steven Feng
 
 #include <SPI.h>
 #include <RF24.h>
@@ -9,13 +9,39 @@
 #define D6 12 // MISO to pin7 NRF
 #define D7 13 // MOSI to pin6 NRF
 //#define D8 15 // CSN to pin4 NRF onlyif is present a PullDown resistor 3.3/4.7 Kohm
-char joyMsg[6];
-int counter = 0;
-String a = " ";
-char radioCommand[5];
-int availableBytes;
-char text [6];
+
+const byte numChars = 6;
+char joyMsg[numChars]; // an array to store the received data
+boolean newData = false;
+
 RF24 radio(D1, D2); //CE-CSN
+
+
+void recvSerial() {
+ static byte ndx = 0;
+ char startMarker = 'A';
+ char endMarker = 'S';
+ char rc;
+ 
+while (Serial.available() > 0 && newData == false) {
+ rc = Serial.read();
+  if (rc == startMarker){
+    ndx = 0;
+    }
+ if (rc != endMarker && rc != startMarker) {
+ joyMsg[ndx] = rc;
+ ndx++;
+ if (ndx >= numChars) {
+ ndx = numChars - 1;
+ }
+ }
+ else {
+ //receivedChars[ndx] = '\0'; // terminate the string
+ ndx = 0;
+ newData = true;
+ }
+ }
+}
 
 void setup(void){
   Serial.begin(9600) ;
@@ -28,40 +54,30 @@ void setup(void){
   radio.openReadingPipe(1, pipe) ;
   
   radio.enableDynamicPayloads() ;
-  radio.powerUp() ;
-  
+  radio.powerUp() ;  
 }
 
 void loop(void){
-  radio.startListening() ;
+  
   //Serial.println("Starting loop. Radio on.") ;
   
   char receivedMessage[6] = {0} ;
 
- int j = 0;
- while(Serial.available())
- {
-   joyMsg[j] = Serial.read();
-   ++j;
- }
+  recvSerial();
+
+  if (newData){
+    radio.write(joyMsg, sizeof(joyMsg)) ;
+    newData = false;
+    }
+    
+  radio.startListening() ;
   
   if (radio.available()){
     radio.read(receivedMessage, sizeof(receivedMessage));
-    //Serial.println(receivedMessage) ;
-   //Serial.println("Turning off the radio.") ;
-    radio.stopListening() ;
-    
-    String stringMessage(receivedMessage) ;
-    //String a = "123456";
-    //if (stringMessage == "1423"){//Recieved message "1423" from RPi     
-      ///strcpy(text, a.c_str()); //Copy string into character array
-      radio.write(joyMsg, sizeof(joyMsg)) ;
-      //while (Serial.available()) {
-      //Serial.println("We sent our message: hehe") ;
-      //}
-    //}
-    
   }
+    radio.stopListening() ;
+    String stringMessage(receivedMessage) ;
+    //encode back to Windows
   
   delay(100) ;
   

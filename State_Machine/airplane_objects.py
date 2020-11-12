@@ -1,4 +1,5 @@
 #from radio_class_test_only import radio_comm_test
+import pigpio
 from motorController import motorController
 from radio import radio_comm
 

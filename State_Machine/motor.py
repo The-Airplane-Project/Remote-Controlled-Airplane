@@ -52,13 +52,13 @@ class ESC:
 
     def arm(self):
         self.pi.set_servo_pulsewidth(self.esc, 0)
-        time.sleep(0.1)
+        time.sleep(0.2)
         self.pi.set_servo_pulsewidth(self.esc, self.max_value)
-        time.sleep(0.1)
+        time.sleep(0.2)
         self.pi.set_servo_pulsewidth(self.esc, self.min_value)
-        time.sleep(0.1)
-        self.pi.set_servo_pulsewidth(self.esc, self.min_value-100)
-        time.sleep(0.1)
+        time.sleep(0.2)
+
+        print("Armed ESC, the sky is calling!")
 
     def set_speed(self, value):
         self.pi.set_servo_pulsewidth(self.esc, value)

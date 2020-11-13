@@ -199,46 +199,47 @@ bool Gamepad::IsPressed(WORD button)
 }
 
 void Gamepad::encode() {
-	
+	/// TO DECODE
+	/// left x, y, rudder values:
+	/// (value - 100)/2
+
+
 	msg[Start] = 41; //ASCII for 'A' -->Start
 	msg[End] = 53;//ASCII for 'S' --> Stop
 	//convert magnitude to angle 
 	//leftX, aileron, +25 --> -23
 	if (leftStickX > 0) {
-		msg[LeftStickX] = uint8_t(leftStickX * 25 + 100);
+		msg[LeftStickX] = uint8_t(leftStickX * 25*2 + 100);
 	}
 	else {
-		msg[LeftStickX] = uint8_t(leftStickX * 23 + 100);
+		msg[LeftStickX] = uint8_t(leftStickX * 23 * 2 + 100);
 	}
 	
 	//leftY, elevator, +30 --> -27
 	if (leftStickY > 0) {
-		msg[LeftStickY] = uint8_t(leftStickY * 30 + 100);
+		msg[LeftStickY] = uint8_t(leftStickY * 30 * 2 + 100);
 	}
 	else {
-		msg[LeftStickY] = uint8_t(leftStickY * 27 + 100);
+		msg[LeftStickY] = uint8_t(leftStickY * 27 * 2 + 100);
 	}
 
 	// right Y, ESC, 0 to 250
 	msg[RightStickY] = uint8_t(rightStickY * 125 + 125); //rightY  0 to 250
 
 
-	uint8_t rudder = 255;
+	uint8_t rudder = 100;
 
-	//left trigger 0 -> 89
-	//right trigger 91 --> 180
+	//left trigger -- 100 -- right trigger
+	
 
 	if (leftTrigger > 0.05 && rightTrigger < 0.05) {
-		rudder = uint8_t(-leftTrigger*37+100);
+		rudder = uint8_t(-leftTrigger*37 * 2 +100);
 	}
 	else if (rightTrigger >0.05  && leftTrigger<0.05)
 	{
-		rudder = uint8_t(rightTrigger*37+100);
+		rudder = uint8_t(rightTrigger*37 * 2 +100);
 	}
-	else if (rightTrigger < 0.05 && leftTrigger < 0.05)
-	{
-		rudder = 100;
-	}
+
 	msg[Rudder] = rudder;
 
 	//bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1

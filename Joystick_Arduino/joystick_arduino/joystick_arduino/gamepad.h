@@ -36,8 +36,10 @@ private:
 
     float deadzoneX;
     float deadzoneY;
-
-
+	const int ROLL_MAX = 45; //maimumm roll before sounding alarm
+	const int PITCH_MAX = 30; //maximum pitch before sounding alarm
+	int leftVibrationmotor = 0;
+	int rightVibrationmotor = 0;
 public:
     Gamepad() {
         deadzoneX = 0.05f;
@@ -50,17 +52,45 @@ public:
     float rightStickY;
     float leftTrigger;
     float rightTrigger;
-	uint8_t msg[5] = { 0 };
+	int eulerX = 0;
+	int eulerY = 0;
+	int eulerZ = 0;
+	uint8_t msg[8] = { 0 };
     int  GetPort();
     XINPUT_GAMEPAD* GetState();
     bool connect();
     bool Refresh();
     bool IsPressed(WORD);
-    void vibrate(int magnitude);
+    void vibrate(int magnitudeLeft, int magnitudeRight);
 	void encode();
 	float controllerCurve(float x);
-	void controllerToMotor();
+	void setEulerAngle(int x, int y, int z);
+	void hapticFeedback();
 };
+
+
+//parameter: x, y, z are euler angles, -180 to 180
+void Gamepad::setEulerAngle(int x, int y, int z) {
+	eulerX = x;
+	eulerY = y;
+	eulerZ = z;
+}
+
+//left and right vibrate different amount to give different feedback
+void Gamepad::hapticFeedback() {
+
+	if (abs(eulerX) > ROLL_MAX) {
+		leftVibrationmotor += 10000;
+		rightVibrationmotor += 1000;
+	}
+	if (abs(eulerY) > ROLL_MAX) {
+		rightVibrationmotor += 10000;
+		leftVibrationmotor += 1000;
+	}
+	vibrate(leftVibrationmotor, rightVibrationmotor);
+	leftVibrationmotor = 0;
+	rightVibrationmotor = 0;
+}
 
 int Gamepad::GetPort()
 {
@@ -136,11 +166,12 @@ bool Gamepad::Refresh()
 }
 enum joystick {
 	Start,
-    LeftStickX,
-    LeftStickY,
-    RightStickY,
-    Rudder,
-    Buttons,
+	LeftStickX,
+	LeftStickY,
+	RightStickY,
+	Rudder,
+	Buttons,
+	Dpads,
 	End
 };
 
@@ -154,15 +185,11 @@ float Gamepad::controllerCurve(float x) {
 	return x;
 }
 
-void Gamepad::controllerToMotor() {
-
-}
-
-void Gamepad::vibrate(int magnitude) {
+void Gamepad::vibrate(int magnitudeLeft, int magnitudeRight) {
     XINPUT_VIBRATION vibration;
     ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
-    vibration.wLeftMotorSpeed = magnitude; // use any value between 0-65535 here
-    vibration.wRightMotorSpeed = magnitude; // use any value between 0-65535 here
+    vibration.wLeftMotorSpeed = magnitudeLeft; // use any value between 0-65535 here
+    vibration.wRightMotorSpeed = magnitudeRight; // use any value between 0-65535 here
     XInputSetState(cId, &vibration);
 }
    
@@ -172,26 +199,45 @@ bool Gamepad::IsPressed(WORD button)
 }
 
 void Gamepad::encode() {
+	
 	msg[Start] = 41; //ASCII for 'A' -->Start
 	msg[End] = 53;//ASCII for 'S' --> Stop
-	msg[LeftStickX] = uint8_t(leftStickX * 90 + 90); //leftX 0 to 180
-	msg[LeftStickY] = uint8_t(leftStickY * 90 + 90); //leftY 0 to 180
-	msg[RightStickY] = uint8_t(rightStickY * 120 + 120); //rightY  0 to 240
+	//convert magnitude to angle 
+	//leftX, aileron, +25 --> -23
+	if (leftStickX > 0) {
+		msg[LeftStickX] = uint8_t(leftStickX * 25 + 100);
+	}
+	else {
+		msg[LeftStickX] = uint8_t(leftStickX * 23 + 100);
+	}
+	
+	//leftY, elevator, +30 --> -27
+	if (leftStickY > 0) {
+		msg[LeftStickY] = uint8_t(leftStickY * 30 + 100);
+	}
+	else {
+		msg[LeftStickY] = uint8_t(leftStickY * 27 + 100);
+	}
+
+	// right Y, ESC, 0 to 250
+	msg[RightStickY] = uint8_t(rightStickY * 125 + 125); //rightY  0 to 250
+
+
 	uint8_t rudder = 255;
 
 	//left trigger 0 -> 89
 	//right trigger 91 --> 180
 
 	if (leftTrigger > 0.05 && rightTrigger < 0.05) {
-		rudder = uint8_t(90-leftTrigger*90);
+		rudder = uint8_t(-leftTrigger*37+100);
 	}
 	else if (rightTrigger >0.05  && leftTrigger<0.05)
 	{
-		rudder = uint8_t( 90 + rightTrigger * 90);
+		rudder = uint8_t(rightTrigger*37+100);
 	}
 	else if (rightTrigger < 0.05 && leftTrigger < 0.05)
 	{
-		rudder = 90;
+		rudder = 100;
 	}
 	msg[Rudder] = rudder;
 
@@ -234,7 +280,35 @@ void Gamepad::encode() {
 		buttons += 1;
 	}
 	msg[Buttons] = buttons;
- }
+ 
+
+	uint8_t D_pads = 0;
+
+	
+
+	//bit4 bit3 bit2 bit1
+	//Up   Down Left Right
+
+	//Up
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0) {
+		D_pads += 8;
+	}
+	//Down
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0) {
+		D_pads += 4;
+	}
+	//Left
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0) {
+		D_pads += 2;
+	}
+	//Right
+	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0) {
+		D_pads += 1;
+	}
+
+	msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
+
+}
 
 
 

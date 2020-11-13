@@ -48,7 +48,7 @@ int main() {
 
             cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY]) << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
 
-            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " << std::to_string(gamepad.msg[Buttons]) << endl;
+            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " << std::to_string(gamepad.msg[Buttons]) << " Dpads: "<< std::to_string(gamepad.msg[Dpads]) << endl;
             //Sleep(10);
         }
         

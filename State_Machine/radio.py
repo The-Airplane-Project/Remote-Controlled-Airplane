@@ -150,7 +150,7 @@ class radio_comm:
         self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
         self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
         
-
+        print(self.receivedMessage)
         #Determine trim setting
         trim_offset = 0
         if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true

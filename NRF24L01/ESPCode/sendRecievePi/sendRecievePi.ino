@@ -78,7 +78,7 @@ void loop(void){
     radio.stopListening() ;
     String stringMessage(receivedMessage) ;
     //encode back to Windows
-  
-  delay(100) ;
+    //Serial.flush();
+    
   
 }

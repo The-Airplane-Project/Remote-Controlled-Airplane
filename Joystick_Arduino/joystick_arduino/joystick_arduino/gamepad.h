@@ -204,12 +204,12 @@ void Gamepad::encode() {
 	/// (value - 100)/2
 
 
-	msg[Start] = 41; //ASCII for 'A' -->Start
-	msg[End] = 53;//ASCII for 'S' --> Stop
+	msg[Start] = uint8_t('A'); //ASCII for 'A' -->Start
+	msg[End] = uint8_t('S');//ASCII for 'S' --> Stop
 	//convert magnitude to angle 
 	//leftX, aileron, +23 --> -23
 
-	msg[LeftStickX] = uint8_t(leftStickX * 23*2 + 100);
+	msg[LeftStickX] = uint8_t(leftStickX * 23 * 2 + 100);
 
 	
 	//leftY, elevator, +30 --> -27

@@ -1,0 +1,28 @@
+Rudder:
+	Nuetral: 95
+	Towards right: > Nuetral
+	Towards left: < Nuetral
+	Right Max:150 (Actual angle is +35 degrees)
+	Left Max: 30 (Actual angle is -35 degrees)
+
+Elevate:
+	Nuetral: 90
+	Towards Up: < Nuetral
+	Towards Down: > Nuetral
+	Up Max:	20 (Actual angle +30 degrees)
+	Down Max: 160 (Actual angle -27 degrees)
+
+Aileron Right:
+	Nuetral: 90
+	Towards Up: < Nuetral
+	Towards down: > Nuetral
+	Up Max: 60 (Actual angle +25 degree)
+	Down Max: 150 (Actual angle -23 degrees)
+
+
+Aileron Left:
+	Nuetral: 90
+	Towards Up: > Nuetral
+	Towards down: < Nuetral
+	Up Max: 140 (Actual angle +25 degree)
+	Down Max: 50 (Actual angle -23 degrees)

@@ -20,10 +20,10 @@
 using namespace std;
 
 int main() {
-    Serial* port = new Serial("COM10");//Entering COM port here does not work right now. Ener COM port in file "Serial.cpp"
+    Serial* port = new Serial("COM3");//Entering COM port here does not work right now. Ener COM port in file "Serial.h"
     if (port->IsConnected()){
         cout << "Connected!" << endl;
-    const int MSGLEN = 5;
+    const int MSGLEN = 8;
     char data[32] = "";
     char command[MSGLEN];
     

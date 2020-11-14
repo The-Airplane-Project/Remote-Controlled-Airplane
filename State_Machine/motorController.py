@@ -19,7 +19,7 @@ class motorController:
 
         #ESC values
         self.escMax = 2000
-        self.escMin = 750
+        self.escMin = 700
 
         #angles
         self.aileronRightAngle = 0
@@ -40,15 +40,15 @@ class motorController:
         #figure out elevatorAngle_
         self.elevatorAngle = self.trim_conversion(elevatorAngle_)
         #convert to motor power
-        self.elevatorAngle = -2.454*self.elevatorAngle + 92.45
+        self.elevatorAngle = round(-2.454*self.elevatorAngle + 92.45)
 
         #figure out rudder angle
         if (abs(rudderAngle_) < 2): #if within +-2
             self.rudderAngle = self.rudderNEUTRAL
         elif (rudderAngle_ < 0): #if negative
-            self.rudderAngle = 94.88 + 2.561*self.rudderAngle + 0.07198* pow(self.rudderAngle,2) + 0.00136*pow(self.rudderAngle,3)
-        else:
-            self.rudderAngle = 95.07 + 1.215*self.rudderAngle + 0.01161* pow(self.rudderAngle,2) - 0.0001123*pow(self.rudderAngle,3)
+            self.rudderAngle = round(94.88 + 2.561*self.rudderAngle + 0.07198* self.rudderAngle*self.rudderAngle+ 0.00136*self.rudderAngle*self.rudderAngle*self.rudderAngle)
+        else: #if positive
+            self.rudderAngle = round(94.97 + 1.299*self.rudderAngle + 0.005383* self.rudderAngle*self.rudderAngle)
 
         #figure out aileron angle from
         if (abs(aileronValue_)<2): #if within +-2
@@ -58,18 +58,18 @@ class motorController:
         elif(aileronValue_<0): #rolling left
             #left aileron angle positive
             self.aileronLeftAngle = abs(aileronValue_)
-            self.aileronLeftAngle = 90.18+2.527*self.aileronLeftAngle - 0.0162*pow(self.aileronLeftAngle,2)
+            self.aileronLeftAngle = round(90.18+2.527*self.aileronLeftAngle - 0.0162*self.aileronLeftAngle*self.aileronLeftAngle)
             #right aileron negatve
             self.aileronRightAngle = -abs(aileronValue_)
-            self.aileronRightAngle = 90.18-1.882*self.aileronRightAngle+0.1203*pow(self.aileronRightAngle,2)+0.003837*pow(self.aileronRightAngle,3)
+            self.aileronRightAngle = round(90.18-1.882*self.aileronRightAngle+0.1203*self.aileronRightAngle*self.aileronRightAngle+0.003837*self.aileronRightAngle*self.aileronRightAngle*self.aileronRightAngle)
 
         else: #rolling right
             #left aileron angle negative
             self.aileronLeftAngle = -abs(aileronValue_)
-            self.aileronLeftAngle = 90.02+0.6657*self.aileronLeftAngle-0.09074*pow(self.aileronLeftAngle,2)-0.00192*pow(self.aileronLeftAngle,3)
+            self.aileronLeftAngle = round(90.02+0.6657*self.aileronLeftAngle-0.09074*self.aileronLeftAngle*self.aileronLeftAngle-0.00192*self.aileronLeftAngle*self.aileronLeftAngle*self.aileronLeftAngle)
             #right aileron angle positive
             self.aileronRightAngle = abs(aileronValue_)
-            self.aileronRightAngle =89.55-1.556*self.aileronRightAngle-0.007206*pow(self.aileronRightAngle,2)
+            self.aileronRightAngle =round(89.55-1.556*self.aileronRightAngle-0.007206*self.aileronRightAngle*self.aileronRightAngle)
 
     #assign angles to motor and ESC
     #trim_offset is either -1, 0, or 1, based on LB, RB button press
@@ -79,18 +79,17 @@ class motorController:
     #ESC value should be written to 750 or less if not operated
     def write_motor(self, aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset):
         #compute needed motor angles
-
-        self.decode_angle(aileronValue_, rudderAngle_, elevatorAngle_)
-        self.escValue = escValue_*5+750 #since esc value is from 0-240 and we want it from 750 - 2000
-
         #trim
         if (trimoffset!=0):
             if (trimoffset>0 and self.trim_offset+3 <= self.trim_offset_MAX):
                 self.trim_offset+=3
             elif (trimoffset<0 and self.trim_offset-3 >=self.trim_offset_MIN):
                 self.trim_offset-=3
+        self.decode_angle(aileronValue_, rudderAngle_, elevatorAngle_)
+        self.escValue = escValue_*5+700 #since esc value is from 0-240 and we want it from 700 - 2000
 
-        ##TODO: write to ESC --> double check
+
+
         #write to servos
         self.aileronLeft.set_angle(self.aileronLeftAngle)
         self.aileronRight.set_angle(self.aileronRightAngle)
@@ -101,7 +100,7 @@ class motorController:
 
 
 
-    ##TODO: configure trim configuration code
+    ##TODO: configure trim configuration code, could consider standard deviation. currently is using offset
     #function: Takes in angle from the controller, combined with trim offsets, to determine a new elevator angle
     #could use std_deviation to calculate, or jsut a hard offset.
     def trim_conversion(self, elevatorAngle_):

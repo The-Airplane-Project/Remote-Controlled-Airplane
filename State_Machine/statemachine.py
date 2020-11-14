@@ -39,7 +39,7 @@ class IdleState (State):
             [radio_valid, x] = radio.decode_message()
             
             if (radio_valid):
-                #print (radio.button_event_state)
+              #  print (radio.button_event_state)
                 if (radio.button_event_state[motorEnable]):
                     looping = False
                     return "EngOnBtn"
@@ -95,24 +95,24 @@ class StandbyState(State):
                         time_out_counter = 0
 
                     if (not radio.neg_throttle_flag_1):
-                        if (msg_decode[3] < 3):
+                        if (msg_decode[3] < 10):
                             radio.neg_throttle_flag_1 = True
                             time_out_counter = 0
                     if (radio.neg_throttle_flag_1):
-                        if (msg_decode[3] < 3):
+                        if (msg_decode[3] < 10):
                             time_out_counter = 0
                         
-                        if (msg_decode[3] > 237):
+                        if (msg_decode[3] > 230):
                             radio.pos_throttle_flag_2 = True
                             time_out_counter = 0
                     if (radio.neg_throttle_flag_1 and radio.pos_throttle_flag_2):
-                        if (msg_decode[3] < 3):
+                        if (msg_decode[3] < 10):
                             radio.cen_throttle_flag_3 = True
                             time_out_counter = 0
                             return "Cruise"
             
-            except:
-                print ("Error occured in Standby State, restarting state") #log this later, but not print
+            except IndexError:
+                print ("Error occured in Standby State, index error") #log this later, but not print
                 return "Error"
             
                 
@@ -144,7 +144,7 @@ class CruiseState (State):
                 [radio_valid, msg_decode] = radio.decode_message()
                 
                 if (radio_valid):
-                    if (radio.button_event_state[motorDisable] and msg_decode[3] < 3):
+                    if (radio.button_event_state[motorDisable] and msg_decode[3] < 10):
                         return "EngOffBtn"
                     
                     if (msg_decode != []):

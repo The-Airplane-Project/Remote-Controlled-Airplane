@@ -80,7 +80,7 @@ class motorController:
     def write_motor(self, aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset):
         #compute needed motor angles
 
-        self.decode_angle(self, aileronValue_, rudderAngle_, elevatorAngle_)
+        self.decode_angle(aileronValue_, rudderAngle_, elevatorAngle_)
         self.escValue = escValue_*5+750 #since esc value is from 0-240 and we want it from 750 - 2000
 
         #trim
@@ -105,7 +105,7 @@ class motorController:
     #function: Takes in angle from the controller, combined with trim offsets, to determine a new elevator angle
     #could use std_deviation to calculate, or jsut a hard offset.
     def trim_conversion(self, elevatorAngle_):
-        elevatorAngle_ +=trimoffset
+        elevatorAngle_ +=self.trim_offset
         if (elevatorAngle_> self.elevatorAngleMAX):
             elevatorAngle_ = self.elevatorAngleMAX
         elif (elevatorAngle_ < self.elevatorAngleMIN):

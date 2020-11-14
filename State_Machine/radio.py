@@ -29,8 +29,9 @@ class joy_button:
             else:
                 self.trigger_event = False
         return self.trigger_event
-    def get_pressed():
-        return self.is_pressed()
+
+    def get_pressed(self):
+        return self.is_pressed
 
 class radio_comm:
     def __init__(self, pi):
@@ -158,7 +159,11 @@ class radio_comm:
             trim_offset -= 1
         elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
-        
+
+        #decode to angles first
+        self.receivedMessage[aileron] = (self.receivedMessage[aileron] - 100) /2
+        self.receivedMessage[rudder] = (self.receivedMessage[rudder] - 100) / 2
+        self.receivedMessage[elevator] = (self.receivedMessage[elevator] - 100) /2
         #return aileron, rudder, elevator, escValue, trimoffset
         return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
 
@@ -171,7 +176,7 @@ class radio_comm:
 
     def checkShouldArm(self):
         #checks right joystick values to determine if we should
-        while (not cen_throttle_flag_3):
+        while (not self.cen_throttle_flag_3):
         #Probably implememnt this directly in standby class
             self.read_from_radio()
 

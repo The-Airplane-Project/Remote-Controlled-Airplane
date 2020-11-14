@@ -1,5 +1,5 @@
 # Sets up IMU, altimeter, and file write
-# Written by Steven Feng, Oct 28, 2020
+# Written by Steven Feng and Ayush Ghosh, Oct 28, 2020
 import sys
 import time
 import FaBo9Axis_MPU9250
@@ -48,7 +48,7 @@ class I2C_sensors:
         self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
         self.prev_altitude = self.altitude
 
-    def calibration(selfs):
+    def calibration(self):
         #calibrate here
 
         #calibration complete
@@ -57,8 +57,8 @@ class I2C_sensors:
     def createLogFile(self):
         #generate log file based on generation date
         now = datetime.now()
-        date_time = now.strftime("%m-%d-%-%H-%M-%S") #TODO: check rosbag timestamp format
-        self.filename = 'i2c_sensor'+str(date_time)+'.csv'
+        date_time = now.strftime("%Y-%m-%d-%H-%M-%S") #TODO: check rosbag timestamp format
+        self.filename = './log/i2c_sensor'+str(date_time)+'.csv'
         with open (self.filename, mode='w') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
             file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])

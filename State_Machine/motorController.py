@@ -10,7 +10,7 @@ class motorController:
         self.aileronRight = Servo(ailRightPin, 0, pwm)
         self.elevator = Servo(elevPin, 0, pwm)
         self.rudder = Servo(rudPin, 0, pwm)
-        self.ESC = ESC(escPin, 0, pwm) ## TODO: double check if I can actually do this
+        self.ESC = ESC(escPin, 0, pwm)
 
         #trim
         self.trim_offset = 0
@@ -79,18 +79,18 @@ class motorController:
     #ESC value should be written to 750 or less if not operated
     def write_motor(self, aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset):
         #compute needed motor angles
-
-        self.decode_angle(self, aileronValue_, rudderAngle_, elevatorAngle_)
-        self.escValue = escValue_*5+750 #since esc value is from 0-240 and we want it from 750 - 2000
-
         #trim
         if (trimoffset!=0):
             if (trimoffset>0 and self.trim_offset+3 <= self.trim_offset_MAX):
                 self.trim_offset+=3
             elif (trimoffset<0 and self.trim_offset-3 >=self.trim_offset_MIN):
                 self.trim_offset-=3
+        self.decode_angle(self, aileronValue_, rudderAngle_, elevatorAngle_)
+        self.escValue = escValue_*5+750 #since esc value is from 0-240 and we want it from 750 - 2000
 
-        ##TODO: write to ESC --> double check
+
+
+
         #write to servos
         self.aileronLeft.set_angle(self.aileronLeftAngle)
         self.aileronRight.set_angle(self.aileronRightAngle)
@@ -98,10 +98,6 @@ class motorController:
         self.rudder.set_angle(self.rudderAngle)
         self.ESC.set_speed(self.escValue)
 
-
-
-
-    ##TODO: configure trim configuration code
     #function: Takes in angle from the controller, combined with trim offsets, to determine a new elevator angle
     #could use std_deviation to calculate, or jsut a hard offset.
     def trim_conversion(self, elevatorAngle_):

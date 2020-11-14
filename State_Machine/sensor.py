@@ -57,8 +57,8 @@ class I2C_sensors:
     def createLogFile(self):
         #generate log file based on generation date
         now = datetime.now()
-        date_time = now.strftime("%Y-%m-%d-%H-%M-%S") #TODO: check rosbag timestamp format
-        self.filename = './log/i2c_sensor'+str(date_time)+'.csv'
+        date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
+        self.filename = './SensorLog/i2c_sensor'+str(date_time)+'.csv'
         with open (self.filename, mode='w') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
             file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])

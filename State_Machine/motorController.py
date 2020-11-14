@@ -59,17 +59,17 @@ class motorController:
             #left aileron angle positive
             self.aileronLeftAngle = abs(aileronValue_)
             self.aileronLeftAngle = 90.18+2.527*self.aileronLeftAngle - 0.0162*pow(self.aileronLeftAngle,2)
-            #right aileron negatve TODO: write the equation for right aileron
+            #right aileron negatve
             self.aileronRightAngle = -abs(aileronValue_)
-
+            self.aileronRightAngle = 90.18-1.882*self.aileronRightAngle+0.1203*pow(self.aileronRightAngle,2)+0.003837*pow(self.aileronRightAngle,3)
 
         else: #rolling right
             #left aileron angle negative
             self.aileronLeftAngle = -abs(aileronValue_)
             self.aileronLeftAngle = 90.02+0.6657*self.aileronLeftAngle-0.09074*pow(self.aileronLeftAngle,2)-0.00192*pow(self.aileronLeftAngle,3)
-            #right aileron angle positive TODO: write the equation for the right aileron
+            #right aileron angle positive
             self.aileronRightAngle = abs(aileronValue_)
-
+            self.aileronRightAngle =89.55-1.556*self.aileronRightAngle-0.007206*pow(self.aileronRightAngle,2)
 
     #assign angles to motor and ESC
     #trim_offset is either -1, 0, or 1, based on LB, RB button press

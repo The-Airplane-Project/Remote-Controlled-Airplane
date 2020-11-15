@@ -63,6 +63,7 @@ public:
     bool IsPressed(WORD);
     void vibrate(int magnitudeLeft, int magnitudeRight);
 	void encode();
+	uint8_t calc_crc8(uint8_t datagram[], uint8_t len);
 	float controllerCurve(float x);
 	void setEulerAngle(int x, int y, int z);
 	void hapticFeedback();
@@ -171,7 +172,8 @@ enum joystick {
 	RightStickY,
 	Rudder,
 	Buttons,
-	Dpads,
+	Crc8,
+	//Dpads,
 	End
 };
 
@@ -281,9 +283,6 @@ void Gamepad::encode() {
  
 
 	uint8_t D_pads = 0;
-
-	
-
 	//bit4 bit3 bit2 bit1
 	//Up   Down Left Right
 
@@ -303,9 +302,30 @@ void Gamepad::encode() {
 	if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0) {
 		D_pads += 1;
 	}
+	
+	//msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
+	
+	// Implement Crc8
+	uint8_t crc8_msg[5] = {0};
+	for (uint8_t i = Start + 1; i < Crc8; i++) {
+		crc8_msg[i] = msg[i];
+	}
+	msg[Crc8] = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
+}
 
-	msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
-
+uint8_t Gamepad::calc_crc8(uint8_t datagram[], uint8_t len) {
+	uint8_t crc = 0;
+	for (uint8_t i = 0; i < len; i++) {
+		uint8_t inbyte = datagram[i];
+		for (uint8_t j = 0; j < 8; j++) {
+			uint8_t mix = (crc ^ inbyte) & 0x01;
+			crc >>= 1;
+			if (mix)
+				crc ^= 0x8C;
+			inbyte >>= 1;
+		}
+	}
+	return crc;
 }
 
 

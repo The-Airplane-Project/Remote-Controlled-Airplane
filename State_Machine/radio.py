@@ -201,11 +201,6 @@ class radio_comm:
     def send_message(self, stateEnum):
         # grab variables from i2c_sensor, ultrasound, and send
         #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude -- vertical_speed
-        message[]
-        message.append(sensor.roll)
-        message.append(sensor.yaw)
-        message.append(sensor.pitch)
-        bit4 = 0
         # 1 for positive, 0 for negative
         # roll yaw pitch - 0 - [ State Machine]
         # 0 idle
@@ -215,6 +210,7 @@ class radio_comm:
         # 4 level flight
         # 5 autonomous takeoff
         # 6 autonomous land
+        bit4 = 0
         if (sensor.roll>0):
             bit4+=128
         if (sensor.yaw>0):
@@ -223,9 +219,8 @@ class radio_comm:
             bit4+=32
 
         bit4+=stateEnum
-        message.append(bit4)
-        message.append(sensor.altitude)
-        message.append(sensor.vertical_speed)
+        message=[abs(round(sensor.roll)), abs(round(sensor.yaw)), abs(round(sensor.pitch)), bit4, abs(round(sensor.altitude)), abs(round(sensor.vertical_speed))]
+        
         while len(message) < self.MAX_PKG_SIZE:
             message.append(0)
         self.radio.write(message)

@@ -21,13 +21,13 @@ ARM_TIME_OUT = 12 # Number of messages before arm sequence resets
 #LB   RB   view  selec  X    Y    A    B
 
 
-# 0 idle
-# 1 standby
-# 2 cruise
-# 3 emergency
-# 4 level flight
-# 5 autonomous takeoff
-# 6 autonomous land
+# 1 idle
+# 2 standby
+# 3 cruise
+# 4 emergency
+# 5 level flight
+# 6 autonomous takeoff
+# 7 autonomous land
 class IdleState (State):
     def on_event(self, event):
         if (event == "EngOnBtn"):
@@ -37,7 +37,7 @@ class IdleState (State):
     def run(self):
         print("Running IdleState")
         radio.start_radio()
-        idle = 0
+        idle = 1
         looping = True
 
         while looping:
@@ -73,7 +73,7 @@ class StandbyState(State):
 
     def run(self):
         print("Running StandbyState")
-        standby = 1
+        standby = 2
 
         self.reset_arm_sequence()
         time_out_counter = 0
@@ -140,7 +140,7 @@ class CruiseState (State):
             
         return self
     def run(self):
-        cruise = 2
+        cruise = 3
         try:
             print("Running CruiseState")
             motors.ESC.arm()
@@ -182,7 +182,7 @@ class EmergencyState (State):
         return self
     def run(self):
         print("Running EmergencyState")
-        emergency = 3
+        emergency = 4
         radio_valid = False
         while (not radio_valid):
             motors.ESC.stop

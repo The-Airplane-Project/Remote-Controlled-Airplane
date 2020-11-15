@@ -3,7 +3,8 @@ import time
 import logging
 os.system('echo gpio | sudo tee /sys/class/leds/led0/trigger')
 
-log_filename = "/home/pi/Documents/rc-test/Remote-Controlled-Airplane/State_Machine/logs/led_blink.log"
+filename_time = time.strftime("%Y%m%d-%H_%M_%S")
+log_filename = "/home/pi/Remote-Controlled-Airplane/logs/" + filename_time + ".log"
 os.makedirs(os.path.dirname(log_filename), exist_ok=True)
 logging.basicConfig(filename=log_filename, filemode='a', level=logging.DEBUG)
 

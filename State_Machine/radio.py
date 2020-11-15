@@ -178,7 +178,7 @@ class radio_comm:
 
     def message_valid(self):
 
-        if (self.calc_crc8(self.receivedMessage[:-1]) == self.receivedMessage[MAX_PKG_SIZE-1]):
+        if (self.calc_crc8(self.receivedMessage[:-1]) == self.receivedMessage[self.MAX_PKG_SIZE-1]):
             return True
         
         return False

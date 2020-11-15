@@ -10,11 +10,11 @@
 #define D7 13 // MOSI to pin6 NRF
 //#define D8 15 // CSN to pin4 NRF onlyif is present a PullDown resistor 3.3/4.7 Kohm
 
-const byte numChars = 6;
+const int numChars = 6;
 char joyMsg[numChars]; // an array to store the received data
 char receivedMessage[numChars] = {0};
 boolean newData = false;
-string send_to_serial = "12345678";
+String send_to_serial = "12345678";
 
 RF24 radio(D1, D2); //CE-CSN
 
@@ -48,7 +48,12 @@ while (Serial.available() > 0 && newData == false) {
 void encode_to_Serial(){
   char startMarker = 'Q';
   char endMarker = 'W';
+  send_to_serial[0] = startMarker;
   
+  for(int i = 0; i < numChars; i++){
+    send_to_serial[i+1] = receivedMessage[i];
+    }
+ send_to_serial[7] = endMarker;
 }
 void setup(void){
   Serial.begin(9600) ;
@@ -85,9 +90,10 @@ void loop(void){
     radio.stopListening();
   if (incoming_msg){
     encode_to_Serial();
-    Serial.println();
+    Serial.println(send_to_serial);
+    Serial.flush();
   } 
     //encode back to Windows
-    //Serial.flush();
+    
     
 }

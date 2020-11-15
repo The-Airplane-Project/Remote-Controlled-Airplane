@@ -308,7 +308,7 @@ void Gamepad::encode() {
 	// Implement Crc8
 	uint8_t crc8_msg[5] = {0};
 	for (uint8_t i = Start + 1; i < Crc8; i++) {
-		crc8_msg[i] = msg[i];
+		crc8_msg[i-1] = msg[i];
 	}
 	msg[Crc8] = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
 }

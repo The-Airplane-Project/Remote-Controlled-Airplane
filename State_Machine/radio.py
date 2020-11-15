@@ -140,8 +140,12 @@ class radio_comm:
             else:
                 return True, []
 
-        btns_value = int(self.receivedMessage[4])
-
+        btns_value = 0
+        
+        if (self.message_valid()):
+            self.previousMessage = self.receivedMessage
+            btns_value = int(self.receivedMessage[4])
+        
         #saving trigger event states from each button
         self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
         self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
@@ -162,8 +166,7 @@ class radio_comm:
         elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
 
-        if (self.message_valid()):
-            self.previousMessage = self.receivedMessage
+        
 
         #decode to angles first
         self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2
@@ -176,15 +179,15 @@ class radio_comm:
 
     def message_valid(self):
 
-        if (self.calc_crc8(self.receivedMessage[:-1]) == self.receivedMessage[MAX_PKG_SIZE-1]):
+        if (self.calc_crc8(self.receivedMessage[:-1]) == self.receivedMessage[self.MAX_PKG_SIZE-1]):
             return True
         
         return False
 
     def calc_crc8(self, datagram, initial_value=0):
         crc = 0
-        for i in range(len(data)):
-            byte = data[i]
+        for i in range(len(datagram)):
+            byte = datagram[i]
             for b in range(8):
                 fb_bit = (crc ^ byte) & 0x01
                 if fb_bit == 0x01:

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #By Steven Feng and Ayush Ghosh
 from state import State
-from airplane_objects import radio, motors
+from airplane_objects import radio, motors, i2c_sensors
 import time
 import sys
 #TODO: Implement autonomous states
@@ -44,7 +44,7 @@ class IdleState (State):
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
 
-            radio.send_message(idle)
+            radio.send_message(idle, , i2c_sensors)
             t = radio.read_from_radio()
             [radio_valid, x] = radio.decode_message()
             
@@ -87,7 +87,7 @@ class StandbyState(State):
                 #btn_num = 0 #int(input("Enter num: "))
                 #throt_num = int(input("Enter throttle: "))
                 #radio.receivedMessage = [10, 100, throt_num, 90, btn_num, 80]
-                radio.send_message(standby)
+                radio.send_message(standby, i2c_sensors)
                 t = radio.read_from_radio()
 
                 #return aileron, rudder, elevator, escValue, trimoffset
@@ -147,7 +147,7 @@ class CruiseState (State):
             
             radio_valid = True
             while (radio_valid):
-                radio.send_message(cruise)
+                radio.send_message(cruise, i2c_sensors)
                 t = radio.read_from_radio()
                 
                 #btn_num = int(input("Enter btn num. Entering 400 will eventually start emergency: "))
@@ -188,7 +188,7 @@ class EmergencyState (State):
             motors.ESC.stop
             #WRITE MOTOR ANGLES AND HOPE FOR THE BEST
             radio.soft_reset()
-            radio.send_message(emergency)
+            radio.send_message(emergency, i2c_sensors)
             t = radio.read_from_radio()
             [radio_valid, msg_decode] = radio.decode_message()
             if (radio_valid and msg_decode != []):

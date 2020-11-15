@@ -5,7 +5,7 @@ from lib_nrf24 import NRF24
 import time
 import spidev
 import pigpio
-from airplane_objects import i2c_sensors
+
 
 class joy_button:
     def __init__(self):
@@ -198,7 +198,7 @@ class radio_comm:
                 byte = byte >> 1
         return crc
 
-    def send_message(self, stateEnum):
+    def send_message(self, stateEnum, i2c_sensors):
         # grab variables from i2c_sensor, ultrasound, and send
         #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude -- vertical_speed
         # 1 for positive, 0 for negative

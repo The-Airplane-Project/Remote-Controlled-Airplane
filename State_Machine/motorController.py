@@ -41,7 +41,8 @@ class motorController:
         self.elevatorAngle = self.trim_conversion(elevatorAngle_)
         #convert to motor power
         self.elevatorAngle = round(-2.454*self.elevatorAngle + 92.45)
-
+        
+        self.rudderAngle = rudderAngle_
         #figure out rudder angle
         if (abs(rudderAngle_) < 2): #if within +-2
             self.rudderAngle = self.rudderNEUTRAL

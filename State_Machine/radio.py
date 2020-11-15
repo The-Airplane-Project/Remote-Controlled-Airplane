@@ -5,7 +5,7 @@ from lib_nrf24 import NRF24
 import time
 import spidev
 import pigpio
-from airplane_objects import sensor
+from airplane_objects import i2c_sensors
 
 class joy_button:
     def __init__(self):
@@ -211,15 +211,15 @@ class radio_comm:
         # 5 autonomous takeoff
         # 6 autonomous land
         bit4 = 0
-        if (sensor.roll>0):
+        if (i2c_sensors.roll>0):
             bit4+=128
-        if (sensor.yaw>0):
+        if (i2c_sensors.yaw>0):
             bit4+=64
-        if (sensor.pitch>0):
+        if (i2c_sensors.pitch>0):
             bit4+=32
 
         bit4+=stateEnum
-        message=[abs(round(sensor.roll)), abs(round(sensor.yaw)), abs(round(sensor.pitch)), bit4, abs(round(sensor.altitude)), abs(round(sensor.vertical_speed))]
+        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), bit4, abs(round(i2c_sensors.altitude)), abs(round(i2c_sensors.vertical_speed))]
         
         while len(message) < self.MAX_PKG_SIZE:
             message.append(0)

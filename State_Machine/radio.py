@@ -136,8 +136,6 @@ class radio_comm:
             else:
                 return True, []
 
-        
-
         btns_value = int(self.receivedMessage[4])
 
         #saving trigger event states from each button
@@ -164,6 +162,7 @@ class radio_comm:
         self.receivedMessage[aileron] = (self.receivedMessage[aileron] - 100) /2
         self.receivedMessage[rudder] = (self.receivedMessage[rudder] - 100) / 2
         self.receivedMessage[elevator] = (self.receivedMessage[elevator] - 100) /2
+        
         #return aileron, rudder, elevator, escValue, trimoffset
         return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
 
@@ -173,27 +172,6 @@ class radio_comm:
         while len(message) < self.MAX_PKG_SIZE:
             message.append(0)
         self.radio.write(message)
-
-    def checkShouldArm(self):
-        #checks right joystick values to determine if we should
-        while (not self.cen_throttle_flag_3):
-        #Probably implememnt this directly in standby class
-            self.read_from_radio()
-
-            #return aileron, rudder, elevator, escValue, trimoffset
-            [success, msg_decode] = self.decode_message()
-
-            if (success):
-                if (not self.neg_throttle_flag_1):
-                    if (msg_decode[3] < 3):
-                        self.neg_throttle_flag_1 = True
-                if (self.neg_throttle_flag_1):
-                    if (msg_decode[3] > 237):
-                        self.pos_throttle_flag_2 = True
-                if (self.neg_throttle_flag_1 and self.pos_throttle_flag_2):
-                    if (msg_decode[3] < 125 and msg_decode[3] > 115):
-                        self.cen_throttle_flag_3 = True
-        return True # Should arm now
 
     def soft_reset(self):
         #restart the radio without changing member variables

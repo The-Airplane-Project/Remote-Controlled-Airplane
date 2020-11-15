@@ -12,7 +12,9 @@
 
 const byte numChars = 6;
 char joyMsg[numChars]; // an array to store the received data
+char receivedMessage[numChars] = {0};
 boolean newData = false;
+string send_to_serial = "12345678";
 
 RF24 radio(D1, D2); //CE-CSN
 
@@ -43,6 +45,11 @@ while (Serial.available() > 0 && newData == false) {
  }
 }
 
+void encode_to_Serial(){
+  char startMarker = 'Q';
+  char endMarker = 'W';
+  
+}
 void setup(void){
   Serial.begin(9600) ;
   
@@ -61,8 +68,7 @@ void loop(void){
   
   //Serial.println("Starting loop. Radio on.") ;
   
-  char receivedMessage[6] = {0} ;
-
+  bool incoming_msg = false;
   recvSerial();
 
   if (newData){
@@ -74,11 +80,14 @@ void loop(void){
   
   if (radio.available()){
     radio.read(receivedMessage, sizeof(receivedMessage));
+    incoming_msg = true;
   }
-    radio.stopListening() ;
-    String stringMessage(receivedMessage) ;
+    radio.stopListening();
+  if (incoming_msg){
+    encode_to_Serial();
+    Serial.println();
+  } 
     //encode back to Windows
     //Serial.flush();
     
-  
 }

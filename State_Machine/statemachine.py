@@ -44,7 +44,7 @@ class IdleState (State):
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
 
-            radio.send_message(idle, , i2c_sensors)
+            radio.send_message(idle, i2c_sensors)
             t = radio.read_from_radio()
             [radio_valid, x] = radio.decode_message()
             

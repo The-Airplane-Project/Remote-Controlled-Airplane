@@ -185,8 +185,8 @@ class radio_comm:
 
     def calc_crc8(self, datagram, initial_value=0):
         crc = 0
-        for i in range(len(data)):
-            byte = data[i]
+        for i in range(len(datagram)):
+            byte = datagram[i]
             for b in range(8):
                 fb_bit = (crc ^ byte) & 0x01
                 if fb_bit == 0x01:

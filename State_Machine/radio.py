@@ -63,6 +63,8 @@ class radio_comm:
         self.pos_throttle_flag_2 = False
         self.cen_throttle_flag_3 = False
 
+        self.previousMessage = [90, 90, 120, 90, 0, 71] #MUST CHECK NOMINAL VALUES!!!!!!!!!!!!!!!!!!!!!!!!!11
+
     def start_radio(self):
         self.radio = NRF24(self.pi, spidev.SpiDev())
         self.radio.begin(0, 17)
@@ -117,6 +119,7 @@ class radio_comm:
             #_RightStickY = 2
             #_Rudder = 3
             #_Buttons = 4
+            #Crc8 = 5
         aileron = 0
         elevator = 1
         escValue = 2
@@ -158,13 +161,39 @@ class radio_comm:
         elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
 
+        if (self.message_valid()):
+            self.previousMessage = self.receivedMessage
+
         #decode to angles first
-        self.receivedMessage[aileron] = (self.receivedMessage[aileron] - 100) /2
-        self.receivedMessage[rudder] = (self.receivedMessage[rudder] - 100) / 2
-        self.receivedMessage[elevator] = (self.receivedMessage[elevator] - 100) /2
+        self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2
+        self.previousMessage[rudder] = (self.previousMessage[rudder] - 100) / 2
+        self.previousMessage[elevator] = (self.previousMessage[elevator] - 100) /2
+        
         
         #return aileron, rudder, elevator, escValue, trimoffset
-        return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
+        return True, [self.previousMessage[aileron], self.previousMessage[rudder], self.previousMessage[elevator], self.previousMessage[escValue], trim_offset]
+
+    def message_valid(self):
+
+        if (self.calc_crc8(self.receivedMessage[:-1]) == self.receivedMessage[MAX_PKG_SIZE-1]):
+            return True
+        
+        return False
+
+def calc_crc8(self, datagram, initial_value=0):
+    crc = initial_value
+
+    # Iterate bytes in data
+    for byte in datagram:
+        # Iterate bits in byte
+        for _ in range(0, 8):
+            if (crc >> 7) ^ (byte & 0x01):
+                crc = ((crc << 1) ^ 0x07) & 0xFF
+            else:
+                crc = (crc << 1) & 0xFF
+            # Shift to next bit
+            byte = byte >> 1
+    return crc
 
     def send_message(self, msg):
         # grab variables from i2c_sensor, ultrasound, and send

@@ -20,6 +20,14 @@ ARM_TIME_OUT = 12 # Number of messages before arm sequence resets
 #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
 #LB   RB   view  selec  X    Y    A    B
 
+
+# 0 idle
+# 1 standby
+# 2 cruise
+# 3 emergency
+# 4 level flight
+# 5 autonomous takeoff
+# 6 autonomous land
 class IdleState (State):
     def on_event(self, event):
         if (event == "EngOnBtn"):
@@ -29,12 +37,14 @@ class IdleState (State):
     def run(self):
         print("Running IdleState")
         radio.start_radio()
-        
+        idle = 0
         looping = True
+
         while looping:
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
 
+            radio.send_message(idle)
             t = radio.read_from_radio()
             [radio_valid, x] = radio.decode_message()
             
@@ -63,6 +73,8 @@ class StandbyState(State):
 
     def run(self):
         print("Running StandbyState")
+        standby = 1
+
         self.reset_arm_sequence()
         time_out_counter = 0
       
@@ -75,6 +87,7 @@ class StandbyState(State):
                 #btn_num = 0 #int(input("Enter num: "))
                 #throt_num = int(input("Enter throttle: "))
                 #radio.receivedMessage = [10, 100, throt_num, 90, btn_num, 80]
+                radio.send_message(standby)
                 t = radio.read_from_radio()
 
                 #return aileron, rudder, elevator, escValue, trimoffset
@@ -127,12 +140,14 @@ class CruiseState (State):
             
         return self
     def run(self):
+        cruise = 2
         try:
             print("Running CruiseState")
             motors.ESC.arm()
             
             radio_valid = True
             while (radio_valid):
+                radio.send_message(cruise)
                 t = radio.read_from_radio()
                 
                 #btn_num = int(input("Enter btn num. Entering 400 will eventually start emergency: "))
@@ -154,24 +169,26 @@ class CruiseState (State):
 
                 else:
                     return "Lost"
+
         except:    
             print ("MAYDAY-MAYDAY, Error occured in Cruise, restarting state")
             return "Error"
         
 class EmergencyState (State):
+
     def on_event(self, event):
         if (event == "Signal"):
             return CruiseState()
         return self
     def run(self):
-        print("Running EmergencyState")       
-        
+        print("Running EmergencyState")
+        emergency = 3
         radio_valid = False
         while (not radio_valid):
             motors.ESC.stop
             #WRITE MOTOR ANGLES AND HOPE FOR THE BEST
             radio.soft_reset()
-
+            radio.send_message(emergency)
             t = radio.read_from_radio()
             [radio_valid, msg_decode] = radio.decode_message()
             if (radio_valid and msg_decode != []):

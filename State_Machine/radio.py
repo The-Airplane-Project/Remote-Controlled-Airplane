@@ -5,6 +5,7 @@ from lib_nrf24 import NRF24
 import time
 import spidev
 import pigpio
+from airplane_objects import sensor
 
 class joy_button:
     def __init__(self):
@@ -82,7 +83,7 @@ class radio_comm:
 
     def read_from_radio(self):
         #Write to arduino first
-        self.send_message("1234")
+        #self.send_message("1234")
 
         #if get stuck in this func for too long, signal emergency --> based on current statemachine implementation, we won't go to emergency unless if we are in cruise
         self.start = time.time()
@@ -194,9 +195,34 @@ class radio_comm:
                 byte = byte >> 1
         return crc
 
-    def send_message(self, msg):
+    def send_message(self, stateEnum):
         # grab variables from i2c_sensor, ultrasound, and send
-        message = list(msg)
+        #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude -- vertical_speed
+        message[]
+        message.append(sensor.roll)
+        message.append(sensor.yaw)
+        message.append(sensor.pitch)
+        bit4 = 0
+        # 1 for positive, 0 for negative
+        # roll yaw pitch - 0 - [ State Machine]
+        # 0 idle
+        # 1 standby
+        # 2 cruise
+        # 3 emergency
+        # 4 level flight
+        # 5 autonomous takeoff
+        # 6 autonomous land
+        if (sensor.roll>0):
+            bit4+=128
+        if (sensor.yaw>0):
+            bit4+=64
+        if (sensor.pitch>0):
+            bit4+=32
+
+        bit4+=stateEnum
+        message.append(bit4)
+        message.append(sensor.altitude)
+        message.append(sensor.vertical_speed)
         while len(message) < self.MAX_PKG_SIZE:
             message.append(0)
         self.radio.write(message)

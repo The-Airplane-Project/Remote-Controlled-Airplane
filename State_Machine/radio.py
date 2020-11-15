@@ -139,8 +139,12 @@ class radio_comm:
             else:
                 return True, []
 
-        btns_value = int(self.receivedMessage[4])
-
+        btns_value = 0
+        
+        if (self.message_valid()):
+            self.previousMessage = self.receivedMessage
+            btns_value = int(self.receivedMessage[4])
+        
         #saving trigger event states from each button
         self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
         self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
@@ -161,8 +165,7 @@ class radio_comm:
         elif (self.button_event_state[6]): #RB pressed
             trim_offset += 1
 
-        if (self.message_valid()):
-            self.previousMessage = self.receivedMessage
+        
 
         #decode to angles first
         self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2

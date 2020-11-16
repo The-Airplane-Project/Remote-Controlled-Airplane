@@ -34,10 +34,10 @@ int main() {
     
     string message;
     Gamepad gamepad;
-    while (gamepad.connect() == false) {
-        Sleep(200);
-    }
-    for (int i = 0; i < 32; ++i) { data[i] = 0; } //initial the data array
+    //while (gamepad.connect() == false) {
+    //    Sleep(200);
+    //}
+    for (int i = 0; i < 32; i++) { data[i] = 0; } //initial the data array
 
     while (1) {
         if (gamepad.Refresh()) {
@@ -72,11 +72,16 @@ int main() {
         Sleep(50);
 
         //read from arduino output
-        n = port->ReadData(data, 31);
+        n = port->ReadData(data, 1);
         if (n != -1) {
-            data[n] = 0;
+            //data[n] = 0;
             //cout << "Current Message: " << command << endl;
             cout << "ESP responds: " << data << endl;
+            //for (int i = 0; i < 32; i++) {
+//
+  //              cout << to_string(data[i]) << " ";
+    //        }
+      //      cout << endl;
             Sleep(50);
         }
     }

@@ -24,13 +24,13 @@ void recvSerial() {
  char startMarker = 'A';
  char endMarker = 'S';
  char rc;
- 
+ while(!Serial.available()){}
 while (Serial.available() > 0 && newData == false) {
  rc = Serial.read();
   if (rc == startMarker){
     ndx = 0;
     }
- if (rc != endMarker && rc != startMarker) {
+ if(rc != endMarker&& rc != startMarker) {
  joyMsg[ndx] = rc;
  ndx++;
  if (ndx >= numChars) {
@@ -75,7 +75,8 @@ void loop(void){
   
   bool incoming_msg = false;
   recvSerial();
-
+ Serial.flush();
+  
   if (newData){
     radio.write(joyMsg, sizeof(joyMsg)) ;
     newData = false;
@@ -102,6 +103,7 @@ void loop(void){
     for (int i = 0; i < numChars+2; i++){
       Serial.write(send_to_serial[i]);  
     }
+    //delay(50);
     Serial.flush();
   } 
     //encode back to Windows

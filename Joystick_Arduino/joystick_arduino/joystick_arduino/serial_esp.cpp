@@ -7,7 +7,7 @@
 #include <iostream>
 #include <Xinput.h>
 #pragma comment (lib, "xinput.lib")
-#include "Serial.h"
+//#include "Serial.h"
 //#include <stdlib.h>
 //#include <stdio.h>
 //#include "gamepad.cpp"
@@ -22,22 +22,15 @@ using namespace std;
 int main() {
     Serial* port = new Serial("COM3");//Entering COM port here does not work right now. Ener COM port in file "Serial.h"
     if (port->IsConnected()){
-        cout << "Connected!" << endl;
+        cout << "ESP Connected!" << endl;
     const int MSGLEN = 8;
-    char data[32] = "";
     char command[MSGLEN];
-    
-    int datalength = 32;  //length of the data,
-    int readResult = 0;
-    int n;
-    bool new_data = false;
-    
-    string message;
+    int count = 0;
+    uint8_t receivedMsg[6] = { 0 };
     Gamepad gamepad;
-    //while (gamepad.connect() == false) {
-    //    Sleep(200);
-    //}
-    for (int i = 0; i < 32; i++) { data[i] = 0; } //initial the data array
+    while (gamepad.connect() == false) {
+        Sleep(200);
+    }
 
     while (1) {
         if (gamepad.Refresh()) {
@@ -56,34 +49,33 @@ int main() {
             for (int i = 0; i < MSGLEN; i++) {
                 command[i] = (char)gamepad.msg[i];
             }
-            //int controller_x = gamepad.msg[LeftStickX];
-            //message = to_string(controller_x);
-            //strcpy_s(command, message.c_str());
             
-            //MSGLEN = strlen(command);
             if (port->WriteData(command, MSGLEN)) {   //write to ESP
                 printf("\n(writing success)\n");
             }
             cout << "Sent to ESP: " << (void*)command[0] << endl;
-            new_data = false;
         }
 
         //delay
         Sleep(50);
 
         //read from arduino output
-        n = port->ReadData(data, 1);
-        if (n != -1) {
-            //data[n] = 0;
-            //cout << "Current Message: " << command << endl;
-            cout << "ESP responds: " << data << endl;
-            //for (int i = 0; i < 32; i++) {
-//
-  //              cout << to_string(data[i]) << " ";
-    //        }
-      //      cout << endl;
-            Sleep(50);
+        
+
+        gamepad.decode(port, receivedMsg);
+        if (gamepad.receive_new_data) {
+            cout << count << " ESP responds: ";
+            count++;
+            for (int i = 0; i < 6; i++) {
+
+                cout << int(receivedMsg[i]) << " ";
+            }
+            cout << endl;
+            gamepad.receive_new_data = false;
         }
+        //delay
+        Sleep(50);
+
     }
 
     system("pause");

@@ -28,7 +28,7 @@
 //#define XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE 8689
 //#define XINPUT_GAMEPAD_TRIGGER_THRESHOLD    30
 //#endif
-
+#include "Serial.h"
 class Gamepad {
 private:
     int cId;
@@ -55,6 +55,8 @@ public:
 	int eulerX = 0;
 	int eulerY = 0;
 	int eulerZ = 0;
+	bool receive_new_data = false;
+	int numChars = 6;
 	uint8_t msg[8] = { 0 };
     int  GetPort();
     XINPUT_GAMEPAD* GetState();
@@ -63,6 +65,7 @@ public:
     bool IsPressed(WORD);
     void vibrate(int magnitudeLeft, int magnitudeRight);
 	void encode();
+	void decode(Serial* port, uint8_t* receivedMessage);
 	uint8_t calc_crc8(uint8_t datagram[], uint8_t len);
 	float controllerCurve(float x);
 	void setEulerAngle(int x, int y, int z);
@@ -328,45 +331,33 @@ uint8_t Gamepad::calc_crc8(uint8_t datagram[], uint8_t len) {
 	return crc;
 }
 
-
-
-
-
-
-
-
-
-//#ifndef MAIN
-/*
-using std::cout;
-using std::endl;
-
-int main()
-{
-    std::cout << "Starting...\n";
-    Gamepad gamepad;
-
-    
-    while (1) {
-        while (gamepad.connect() == false) {
-            Sleep(200);
-        }
-        if (gamepad.Refresh()){
-            
-            cout << "Controller connected on port " << gamepad.GetPort() << endl;
-
-			gamepad.encode();
-
-			cout << "Left thumb stick: (" << std::to_string(gamepad.msg[0]) << ", " << std::to_string(gamepad.msg[1]) << ")   Right thumb stick : (" << std::to_string(gamepad.msg[2])<< endl;
-
-			cout << "analog trigger: " << std::to_string(gamepad.msg[3]) << "   Buttons: " << std::to_string(gamepad.msg[4]) << endl;
-
-			Sleep(200);
+void Gamepad::decode(Serial *port, uint8_t* receivedMessage) {
+		static byte ndx = 0;
+		char startMarker = 'Q';
+		char endMarker = 'W';
+		char rc[1] = { 0 };
+		char waste[1] = { 0 };
+		bool proceed = false;
+		
+		while ((port->ReadData(rc, 1) != -1) && receive_new_data == false) {
+			if (rc[0] == startMarker) {
+				ndx = 0;
+			}
+			if (rc[0] != endMarker && rc[0] != startMarker) {
+				
+					receivedMessage[ndx] = rc[0];
+					ndx++;
+				
+					if (ndx >= numChars) {
+						ndx = numChars - 1;
+					}
+				
+			}
+			else{
+				//receivedChars[ndx] = '\0'; // terminate the string
+				ndx = 0;
+				receive_new_data = true;
+			}
 		}
-    }
-
-
-
-}*/
-//#endif // !1
-
+	
+}

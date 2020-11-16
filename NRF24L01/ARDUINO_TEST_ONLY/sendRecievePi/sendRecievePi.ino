@@ -21,8 +21,8 @@ RF24 radio(D1, D2); //CE-CSN
 
 void recvSerial() {
  static byte ndx = 0;
- char startMarker = 'A';
- char endMarker = 'S';
+ char startMarker = 251;
+ char endMarker = 252;
  char rc;
  while(!Serial.available()){}
 while (Serial.available() > 0 && newData == false) {
@@ -46,8 +46,8 @@ while (Serial.available() > 0 && newData == false) {
 }
 
 void encode_to_Serial(){
-  char startMarker = 'Q';
-  char endMarker = 'W';
+  char startMarker = 253;
+  char endMarker = 254;
   send_to_serial[0] = startMarker;
   
   for(int i = 0; i < numChars; i++){
@@ -91,7 +91,7 @@ void loop(void){
     radio.stopListening();
 
     //testing part
-    receivedMessage[0] = 253;
+    receivedMessage[0] = 250;
     receivedMessage[1] = 153;
     receivedMessage[2] = 90;
     receivedMessage[3] = 144;

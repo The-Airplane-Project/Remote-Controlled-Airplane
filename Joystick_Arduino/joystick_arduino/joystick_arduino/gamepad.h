@@ -209,8 +209,8 @@ void Gamepad::encode() {
 	/// (value - 100)/2
 
 
-	msg[Start] = uint8_t('A'); //ASCII for 'A' -->Start
-	msg[End] = uint8_t('S');//ASCII for 'S' --> Stop
+	msg[Start] = 251; //ASCII for 'A' -->Start
+	msg[End] = 252;//ASCII for 'S' --> Stop
 	//convert magnitude to angle 
 	//leftX, aileron, +23 --> -23
 
@@ -333,8 +333,8 @@ uint8_t Gamepad::calc_crc8(uint8_t datagram[], uint8_t len) {
 
 void Gamepad::decode(Serial *port, uint8_t* receivedMessage) {
 		static byte ndx = 0;
-		char startMarker = 'Q';
-		char endMarker = 'W';
+		char startMarker = 253;
+		char endMarker = 254;
 		char rc[1] = { 0 };
 		char waste[1] = { 0 };
 		bool proceed = false;

@@ -130,7 +130,7 @@ class radio_comm:
         # have to store previous data
         # trim: check buttons, but only output -1, 0, or 1, for detrim, and trim
         
-        if self.receivedMessage == [255, 255, 255, 255, 255, 255]:
+        if self.receivedMessage == [self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0]]:
             return False, []
         
         if self.receivedMessage == []:
@@ -141,39 +141,38 @@ class radio_comm:
                 return True, []
 
         btns_value = 0
-        
+        trim_offset = 0
         if (self.message_valid()):
             self.previousMessage = self.receivedMessage
             btns_value = int(self.receivedMessage[4])
         
-        #saving trigger event states from each button
-        self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
-        self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
-        self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
-        self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
-        self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
-        self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
-        self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
-        self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
+            #saving trigger event states from each button
+            self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
+            self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
+            self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
+            self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
+            self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
+            self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
+            self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
+            self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
+            
+            print(self.previousMessage)
+            #Determine trim setting
+            
+            if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
+                trim_offset = 0
+            elif (self.button_event_state[7]): #LB pressed
+                trim_offset -= 1
+            elif (self.button_event_state[6]): #RB pressed
+                trim_offset += 1
+    
+            #decode to angles first
+            self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2
+            self.previousMessage[rudder] = (self.previousMessage[rudder] - 100) / 2
+            self.previousMessage[elevator] = (self.previousMessage[elevator] - 100) /2
         
-        print(self.receivedMessage)
-        #Determine trim setting
-        trim_offset = 0
-        if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
-            trim_offset = 0
-        elif (self.button_event_state[7]): #LB pressed
-            trim_offset -= 1
-        elif (self.button_event_state[6]): #RB pressed
-            trim_offset += 1
-
-        
-
-        #decode to angles first
-        self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2
-        self.previousMessage[rudder] = (self.previousMessage[rudder] - 100) / 2
-        self.previousMessage[elevator] = (self.previousMessage[elevator] - 100) /2
-        
-        
+        else:
+            print ("Invalid Message")
         #return aileron, rudder, elevator, escValue, trimoffset
         return True, [self.previousMessage[aileron], self.previousMessage[rudder], self.previousMessage[elevator], self.previousMessage[escValue], trim_offset]
 
@@ -187,7 +186,7 @@ class radio_comm:
     def calc_crc8(self, datagram, initial_value=0):
         crc = 0
         for i in range(len(datagram)):
-            byte = datagram[i]
+            byte = int(datagram[i])
             for b in range(8):
                 fb_bit = (crc ^ byte) & 0x01
                 if fb_bit == 0x01:

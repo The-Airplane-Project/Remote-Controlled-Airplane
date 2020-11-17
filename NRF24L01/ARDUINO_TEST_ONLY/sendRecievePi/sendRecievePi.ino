@@ -15,16 +15,16 @@ char joyMsg[numChars]; // an array to store the received data
 char receivedMessage[numChars] = {0};
 boolean newData = false;
 char send_to_serial[numChars+2] = {0};
-
+bool incoming_msg = false;
 RF24 radio(D1, D2); //CE-CSN
 
 
 void recvSerial() {
  static byte ndx = 0;
- char startMarker = 251;
- char endMarker = 252;
- char rc;
- while(!Serial.available()){}
+ static char startMarker = 251;
+ static char endMarker = 252;
+ static char rc;
+while(!Serial.available()){}
 while (Serial.available() > 0 && newData == false) {
  rc = Serial.read();
   if (rc == startMarker){
@@ -73,9 +73,8 @@ void loop(void){
   
   //Serial.println("Starting loop. Radio on.") ;
   
-  bool incoming_msg = false;
+  
   recvSerial();
- Serial.flush();
   
   if (newData){
     radio.write(joyMsg, sizeof(joyMsg)) ;
@@ -89,22 +88,31 @@ void loop(void){
     incoming_msg = true;
   }
     radio.stopListening();
-
+    delay(50);
     //testing part
     receivedMessage[0] = 250;
     receivedMessage[1] = 153;
-    receivedMessage[2] = 90;
-    receivedMessage[3] = 144;
+    receivedMessage[2] = joyMsg[2];
+    receivedMessage[3] = joyMsg[3];
     receivedMessage[4] = 212;
-    receivedMessage[5] = 249;
-    incoming_msg = true;
+    receivedMessage[5] = random(0, 250);
+    for (int i = 0; i < 8; i++){
+    send_to_serial[i] = 0;
+    }
+    int test = random (0, 1000);
+    if (test > 500){
+    incoming_msg = false;
+    }
+    //incoming_msg = true;
   if (incoming_msg){
     encode_to_Serial();
     for (int i = 0; i < numChars+2; i++){
-      Serial.write(send_to_serial[i]);  
+      Serial.write(send_to_serial[i]);
+        
     }
-    //delay(50);
     Serial.flush();
+    //delay(50);
+    
   } 
     //encode back to Windows
     

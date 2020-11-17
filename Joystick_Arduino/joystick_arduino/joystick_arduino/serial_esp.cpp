@@ -18,7 +18,7 @@
 #include "gamepad.h"
 
 using namespace std;
-
+SYSTEMTIME st;
 int main() {
     Serial* port = new Serial("COM3");//Entering COM port here does not work right now. Ener COM port in file "Serial.h"
     if (port->IsConnected()){
@@ -60,6 +60,8 @@ int main() {
             if (port->WriteData(command, MSGLEN)) {   //write to ESP
                 printf("\n(writing success)\n");
             }
+            GetSystemTime(&st);
+            printf("The system time is: %02d:%02d:%02d:%02d ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
             cout << count << "Sent to ESP: ";
             for (int i = 0; i < MSGLEN; i++) {
                 cout << (int)(unsigned char)command[i] << " ";
@@ -68,14 +70,16 @@ int main() {
         }
 
         //delay
-        Sleep(100);
+        Sleep(5);
 
         //read from arduino output
         
         
         gamepad.decode(port, receivedMsg);
         if (gamepad.receive_new_data) {
-            cout << count << " ESP responds: ";
+            GetSystemTime(&st);
+            printf("The system time is: %02d:%02d:%02d:%02d ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+            cout << count << "ESP responds: ";
             
             for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
 

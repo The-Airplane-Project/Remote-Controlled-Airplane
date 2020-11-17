@@ -132,7 +132,7 @@ uint8_t calc_crc8(uint8_t *datagram, uint8_t len) {
 }
 
 void setup(void){
-  Serial.begin(9600) ;
+  Serial.begin(115200) ;
   
   radio.begin() ;
   radio.setPALevel(RF24_PA_MAX) ;
@@ -172,7 +172,7 @@ void loop(void){
     incoming_msg = true;
   }
     radio.stopListening();
-    //delay(50);
+    delay(5);
 
 
     //testing part
@@ -198,7 +198,7 @@ void loop(void){
     for (int i = 0; i < MSG_LEN_SERIAL; i++){
       Serial.write(send_to_serial[i]);
     }
-    Serial.flush();
+    //Serial.flush();
     //delay(50);
     
   } 

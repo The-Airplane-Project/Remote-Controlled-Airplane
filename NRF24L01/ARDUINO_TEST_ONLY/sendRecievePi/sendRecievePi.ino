@@ -70,10 +70,13 @@ void recvSerial() {
   for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
     if (incoming_ser_msg[i] != 0) {
       //Do the error checking with crc8 and then copy into outgoingRadio here
-      if (incoming_serial_valid()){
+      //if (incoming_serial_valid()){
+      for (int i = 0; i < DATA_SIZE; i++){
+    outgoingRadio[i] = incoming_ser_msg[i];
+  }
         newData = true;
         break;  
-      }
+      //}
     }
   }
 }
@@ -110,9 +113,9 @@ void encode_to_Serial(){
   //for (uint8_t i = 0; i < DATA_SIZE; i++) {
   //  crc8_msg[i] = incomingRadio[i];
   //}
-  uint8_t crc8_total = calc_crc8(incomingRadio, uint8_t(sizeof(incomingRadio)));
-  send_to_serial[DATA_SIZE+1] = (crc8_total & 0b11110000);
-  send_to_serial[DATA_SIZE+2] = (crc8_total & 0b00001111);
+  //uint8_t crc8_total = calc_crc8(incomingRadio, uint8_t(sizeof(incomingRadio)));
+  send_to_serial[DATA_SIZE+1] = 243;//(crc8_total & 0b11110000);
+  send_to_serial[DATA_SIZE+2] = 143;//(crc8_total & 0b00001111);
   send_to_serial[DATA_SIZE+3] = endMarker;
 }
 
@@ -172,7 +175,7 @@ void loop(void){
     incoming_msg = true;
   }
     radio.stopListening();
-    delay(5);
+    delay(50);
 
 
     //testing part

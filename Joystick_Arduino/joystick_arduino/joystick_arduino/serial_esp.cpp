@@ -23,10 +23,12 @@ int main() {
     Serial* port = new Serial("COM3");//Entering COM port here does not work right now. Ener COM port in file "Serial.h"
     if (port->IsConnected()){
         cout << "ESP Connected!" << endl;
-    const int MSGLEN = 8;
+    const int MSGLEN = 10;
+    const int RAW_SERIAL_SIZE = 8;
+    const int DATA_SIZE = 6;
     char command[MSGLEN];
     int count = 0;
-    uint8_t receivedMsg[6] = { 0 };
+    uint8_t receivedMsg[RAW_SERIAL_SIZE] = { 0 };
     Gamepad gamepad;
     //while (gamepad.connect() == false) {
     //    Sleep(200);
@@ -39,31 +41,34 @@ int main() {
 
             //gamepad.encode();
 
-            cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY]) << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
+            cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY])
+                << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
 
-            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " << std::to_string(gamepad.msg[Buttons]) << " Crc8: "<< std::to_string(gamepad.msg[Crc8]) << endl;
+            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " 
+                << std::to_string(gamepad.msg[Buttons]) << "   DPad: "<< std::to_string(gamepad.msg[Dpads])
+                << " Crc8: "<< std::to_string(gamepad.msg[Crc8_1])
+                << " "<< std::to_string(gamepad.msg[Crc8_2]) << endl;
             //Sleep(10);
         }
         
         if (1) {
-            //gamepad.encode();
+            gamepad.encode();
             for (int i = 0; i < MSGLEN; i++) {
-                command[i] = i;//(char)gamepad.msg[i];
+                command[i] = gamepad.msg[i];
             }
             
             if (port->WriteData(command, MSGLEN)) {   //write to ESP
                 printf("\n(writing success)\n");
             }
-            cout << "Sent to ESP: ";
+            cout << count << "Sent to ESP: ";
             for (int i = 0; i < MSGLEN; i++) {
-
-                cout << int(command[i]) << " ";
+                cout << (int)(unsigned char)command[i] << " ";
             }
             cout << endl;
         }
 
         //delay
-        Sleep(50);
+        Sleep(100);
 
         //read from arduino output
         
@@ -71,15 +76,15 @@ int main() {
         gamepad.decode(port, receivedMsg);
         if (gamepad.receive_new_data) {
             cout << count << " ESP responds: ";
-            count++;
-            for (int i = 0; i < 6; i++) {
+            
+            for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
 
                 cout << int(receivedMsg[i]) << " ";
             }
             cout << endl;
             gamepad.receive_new_data = false;
         }
-        
+        count++;
         //delay
         //Sleep(50);
 
@@ -98,16 +103,15 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
     static char startMarker = 253;
     static char endMarker = 254;
     static char rc[1] = { 0 };
-    static char waste[1] = { 0 };
+    static bool stop_loop = false;
     static int n;
     //while (port->ReadData(rc, 1) == -1) {}
-    receive_new_data = false;
     cout << "decoding" << endl;
-    for (int i = 0; i < MSGLEN; i++) {
+    for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
         receivedMessage[i] = 0;
     }
     //n = port->ReadData(rc, 1);
-    while ((receive_new_data == false)) {
+    while ((stop_loop == false)) {
         n = (port->ReadData(rc, 1));
                 if (n != -1) {
 
@@ -119,24 +123,42 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
                         receivedMessage[ndx] = rc[0];
                         ndx++;
 
-                        if (ndx >= numChars) {
-                            ndx = numChars - 1;
+                        if (ndx >= RAW_SERIAL_SIZE) {
+                            ndx = RAW_SERIAL_SIZE - 1;
                         }
 
                     }
                     if (rc[0] == endMarker) {
                         //receivedChars[ndx] = '\0'; // terminate the string
                         ndx = 0;
-                        receive_new_data = true;
+                        stop_loop = true;
                     }
                 }
     }
+    stop_loop = false;
     receive_new_data = false;
-    for (int i = 0; i < MSGLEN; i++) {
+    for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
         if (receivedMessage[i] != 0) {
-            receive_new_data = true;
-            break;
+            //Do the error checking with crc8 and then copy into GUI here
+            if (incoming_serial_valid(receivedMessage)) {
+                receive_new_data = true;
+                break;
+            }
         }
     }
 
+}
+bool Gamepad:: incoming_serial_valid(uint8_t* receivedMessage) {
+    uint8_t send_to_GUI[6] = {0}; //6 = DATA_SIZE
+    for (int i = 0; i < DATA_SIZE; i++) {
+        send_to_GUI[i] = receivedMessage[i];
+    }
+    uint8_t crc8_total = calc_crc8(send_to_GUI, uint8_t(sizeof(send_to_GUI)));
+
+    if (crc8_total == (receivedMessage[6] | receivedMessage[7])) {
+        return true; //Data is valid and outgoingRadio will be sent
+    }
+
+    //Data is invalid so message wont be sent
+    return false;
 }

@@ -55,10 +55,14 @@ public:
 	int eulerX = 0;
 	int eulerY = 0;
 	int eulerZ = 0;
+	
+	//Setting up messages
 	bool receive_new_data = false;
-	int numChars = 6;
-	int MSGLEN = 8;
-	uint8_t msg[8] = { 0 };
+	const int DATA_SIZE = 6;
+	const int RAW_SERIAL_SIZE = 8;
+	const int MSGLEN = 10;
+	uint8_t msg[10] = { 0 };
+
     int  GetPort();
     XINPUT_GAMEPAD* GetState();
     bool connect();
@@ -68,6 +72,7 @@ public:
 	void encode();
 	void decode(Serial* port, uint8_t* receivedMessage);
 	uint8_t calc_crc8(uint8_t datagram[], uint8_t len);
+	bool incoming_serial_valid(uint8_t* receivedMessage);
 	float controllerCurve(float x);
 	void setEulerAngle(int x, int y, int z);
 	void hapticFeedback();
@@ -169,15 +174,16 @@ bool Gamepad::Refresh()
     }
     return false;
 }
-enum joystick {
+enum send_msg_structure {
 	Start,
 	LeftStickX,
 	LeftStickY,
 	RightStickY,
 	Rudder,
 	Buttons,
-	Crc8,
-	//Dpads,
+	Dpads,
+	Crc8_1,
+	Crc8_2,
 	End
 };
 
@@ -307,14 +313,28 @@ void Gamepad::encode() {
 		D_pads += 1;
 	}
 	
-	//msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
+	msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
 	
+	//Testing only
+	msg[Start] = 251;
+	msg[LeftStickX] = 90;
+	msg[LeftStickY] = 100;
+	msg[RightStickY] = 249;
+	msg[Rudder] = 220;
+	msg[Buttons] = 121;
+	msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
+	msg[Crc8_1] = 0;
+	msg[Crc8_2] = 0;
+	msg[End] = 252;
+
 	// Implement Crc8
-	uint8_t crc8_msg[5] = {0};
-	for (uint8_t i = Start + 1; i < Crc8; i++) {
+	uint8_t crc8_msg[6] = {0};
+	for (uint8_t i = LeftStickX; i < Crc8_1; i++) {
 		crc8_msg[i-1] = msg[i];
 	}
-	msg[Crc8] = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
+	uint8_t crc8_total = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
+	msg[Crc8_1] = (crc8_total & 0b11110000);
+	msg[Crc8_2] = (crc8_total & 0b00001111);
 }
 
 uint8_t Gamepad::calc_crc8(uint8_t datagram[], uint8_t len) {

@@ -55,6 +55,9 @@ int main() {
             gamepad.encode();
             for (int i = 0; i < MSGLEN; i++) {
                 command[i] = gamepad.msg[i];
+                if (i == Dpads) {
+                    command[i] = (uint8_t)count;
+                }
             }
             
             if (port->WriteData(command, MSGLEN)) {   //write to ESP
@@ -148,6 +151,7 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
                 receive_new_data = true;
                 break; 
             }
+
         }
     }
 

@@ -146,7 +146,7 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
             //Do the error checking with crc8 and then copy into GUI here
             if (incoming_serial_valid(receivedMessage)) {
                 receive_new_data = true;
-                break;
+                break; 
             }
         }
     }

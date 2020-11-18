@@ -322,7 +322,7 @@ void Gamepad::encode() {
 	msg[RightStickY] = 249;
 	msg[Rudder] = 220;
 	msg[Buttons] = 121;
-	msg[Dpads] = 200;//(rand() % (249 - 0 + 1) + 0);
+	msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
 	msg[Crc8_1] = 0;
 	msg[Crc8_2] = 0;
 	msg[End] = 252;
@@ -332,9 +332,9 @@ void Gamepad::encode() {
 	for (uint8_t i = LeftStickX; i < Crc8_1; i++) {
 		crc8_msg[i-1] = msg[i];
 	}
-	//uint8_t crc8_total = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
-	msg[Crc8_1] = 243;//(crc8_total & 0b11110000);
-	msg[Crc8_2] = 143;//(crc8_total & 0b00001111);
+	uint8_t crc8_total = calc_crc8(crc8_msg, uint8_t(sizeof(crc8_msg)));
+	msg[Crc8_1] = (crc8_total & 0b11110000);
+	msg[Crc8_2] = (crc8_total & 0b00001111);
 }
 
 uint8_t Gamepad::calc_crc8(uint8_t datagram[], uint8_t len) {

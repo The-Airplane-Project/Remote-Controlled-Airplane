@@ -40,7 +40,7 @@ void recvSerial() {
   static char rc;
   static bool stop_loop = false;
   
-  for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
+  for (uint8_t i = 0; i < RAW_SERIAL_SIZE; i++) {
     incoming_ser_msg[i] = 0;
   }
   
@@ -67,7 +67,7 @@ void recvSerial() {
   stop_loop = false;
   newData = false;
   
-  for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
+  for (uint8_t i = 0; i < RAW_SERIAL_SIZE; i++) {
     if (incoming_ser_msg[i] != 0) {
       //Do the error checking with crc8 and then copy into outgoingRadio here
       if (incoming_serial_valid()){
@@ -79,10 +79,11 @@ void recvSerial() {
 }
 
 bool incoming_serial_valid(){
-  for (int i = 0; i < DATA_SIZE; i++){
+  for (uint8_t i = 0; i < DATA_SIZE; i++){
     outgoingRadio[i] = incoming_ser_msg[i];
   }
-  uint8_t crc8_total = calc_crc8(outgoingRadio, uint8_t(sizeof(outgoingRadio)));
+  static uint8_t crc8_total = 0;
+  crc8_total = calc_crc8(outgoingRadio, uint8_t(sizeof(outgoingRadio)));
   
   if (crc8_total == (incoming_ser_msg[6] | incoming_ser_msg[7])){
     return true; //Data is valid and outgoingRadio will be sent
@@ -92,25 +93,26 @@ bool incoming_serial_valid(){
   return false;
 }
 void encode_to_Serial(){
-  char startMarker = 253;
-  char endMarker = 254;
+  static char startMarker = 253;
+  static char endMarker = 254;
   
   //Clearing the message to be sent
-  for (int i = 0; i < MSG_LEN_SERIAL; i++){
+  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
     send_to_serial[i] = 0;
   }
   
   send_to_serial[0] = startMarker;
   
   //Copying incoming radio into 
-  for(int i = 0; i < DATA_SIZE; i++){
+  for(uint8_t i = 0; i < DATA_SIZE; i++){
     send_to_serial[i+1] = incomingRadio[i];
     }
   //uint8_t crc8_msg[DATA_SIZE] = {0};
   //for (uint8_t i = 0; i < DATA_SIZE; i++) {
   //  crc8_msg[i] = incomingRadio[i];
   //}
-  uint8_t crc8_total = calc_crc8(incomingRadio, uint8_t(sizeof(incomingRadio)));
+  static uint8_t crc8_total = 0;
+  crc8_total = calc_crc8(incomingRadio, uint8_t(sizeof(incomingRadio)));
   send_to_serial[DATA_SIZE+1] = (crc8_total & 0b11110000);
   send_to_serial[DATA_SIZE+2] = (crc8_total & 0b00001111);
   send_to_serial[DATA_SIZE+3] = endMarker;
@@ -143,6 +145,7 @@ void setup(void){
   
   radio.enableDynamicPayloads() ;
   radio.powerUp() ;  
+  
 }
 
 void loop(void){
@@ -195,8 +198,9 @@ void loop(void){
     //
   if (incoming_msg){
     encode_to_Serial();
-    for (int i = 0; i < MSG_LEN_SERIAL; i++){
+    for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
       Serial.write(send_to_serial[i]);
+      Serial.flush();
     }
     //Serial.flush();
     //delay(50);

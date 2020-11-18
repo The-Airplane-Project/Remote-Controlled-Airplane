@@ -79,13 +79,17 @@ void recvSerial() {
 }
 
 bool incoming_serial_valid(){
+uint8_t crc8_test [DATA_SIZE] = {0};
   for (uint8_t i = 0; i < DATA_SIZE; i++){
-    outgoingRadio[i] = incoming_ser_msg[i];
+    crc8_test[i] = incoming_ser_msg[i];
   }
   static uint8_t crc8_total = 0;
-  crc8_total = calc_crc8(outgoingRadio, uint8_t(sizeof(outgoingRadio)));
+  crc8_total = calc_crc8(crc8_test, uint8_t(sizeof(crc8_test)));
   
   if (crc8_total == (incoming_ser_msg[6] | incoming_ser_msg[7])){
+    for (uint8_t i = 0; i < DATA_SIZE; i++){
+    outgoingRadio[i] = incoming_ser_msg[i];
+  }
     return true; //Data is valid and outgoingRadio will be sent
   }
 
@@ -112,7 +116,11 @@ void encode_to_Serial(){
   //  crc8_msg[i] = incomingRadio[i];
   //}
   static uint8_t crc8_total = 0;
-  crc8_total = calc_crc8(incomingRadio, uint8_t(sizeof(incomingRadio)));
+  uint8_t crc8_test [DATA_SIZE] = {0};
+  for (uint8_t i = 0; i < DATA_SIZE; i++){
+    crc8_test[i] = incomingRadio[i];
+  }
+  crc8_total = calc_crc8(crc8_test, uint8_t(sizeof(crc8_test)));
   send_to_serial[DATA_SIZE+1] = (crc8_total & 0b11110000);
   send_to_serial[DATA_SIZE+2] = (crc8_total & 0b00001111);
   send_to_serial[DATA_SIZE+3] = endMarker;
@@ -153,7 +161,7 @@ void loop(void){
   recvSerial();
   
   if (newData){
-    radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
+    //radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
     
     //Testing part
     incomingRadio[0] = outgoingRadio[0];
@@ -167,14 +175,15 @@ void loop(void){
     newData = false;
     }
     
-  radio.startListening();
+  /*radio.startListening();
   
   if (radio.available()){
     //Deactivated cause of test
     //radio.read(incomingRadio, sizeof(incomingRadio));
     incoming_msg = true;
   }
-    radio.stopListening();
+    radio.stopListening();*/
+    incoming_msg = true;
     delay(5);
 
 

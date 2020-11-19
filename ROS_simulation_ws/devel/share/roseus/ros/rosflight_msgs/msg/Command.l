@@ -1,1 +1,0 @@
-/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosflight_msgs/share/roseus/ros/rosflight_msgs/msg/Command.l

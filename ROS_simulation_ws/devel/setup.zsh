@@ -1,1 +1,0 @@
-/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/catkin_tools_prebuild/setup.zsh

@@ -1,1 +1,0 @@
-/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosplane_sim/share/rosplane_sim/cmake/rosplane_simConfig.cmake

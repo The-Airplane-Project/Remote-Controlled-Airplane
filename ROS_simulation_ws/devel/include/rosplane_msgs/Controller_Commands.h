@@ -1,1 +1,0 @@
-/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosplane_msgs/include/rosplane_msgs/Controller_Commands.h

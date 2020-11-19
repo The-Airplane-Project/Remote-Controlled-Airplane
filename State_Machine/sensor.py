@@ -37,6 +37,8 @@ class I2C_sensors:
     
         self.altimeter = BMP085.BMP085()
         self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+        self.createLogFile()
+        self.calibration()
 
     #read sensor data raw
     def readData(self):
@@ -92,6 +94,12 @@ class I2C_sensors:
     def convertToDeg(self, rad):
         pi = 3.1416
         return rad*180/pi
+
+    #sensor thread
+    def main(self):
+        sensors.readData()
+        sensors.convertSensor()
+        sensors.writeToFile()
 
 #test program
 if __name__ == '__main__':

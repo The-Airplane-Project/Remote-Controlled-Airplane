@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/aghosh/Remote-Controlled-Airplane/catkin_ws/devel/.private/ros_gui_plane/setup.sh

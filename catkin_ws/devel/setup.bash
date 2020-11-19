@@ -1,0 +1,1 @@
+/home/aghosh/Remote-Controlled-Airplane/catkin_ws/devel/.private/catkin_tools_prebuild/setup.bash

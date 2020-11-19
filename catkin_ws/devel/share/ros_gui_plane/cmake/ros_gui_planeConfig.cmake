@@ -1,0 +1,1 @@
+/home/aghosh/Remote-Controlled-Airplane/catkin_ws/devel/.private/ros_gui_plane/share/ros_gui_plane/cmake/ros_gui_planeConfig.cmake

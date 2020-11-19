@@ -97,9 +97,25 @@ int main(int argc, char **argv)
     ros::spinOnce();
 
     loop_rate.sleep();
+    static bool positive = true;
 
+    if (positive){
+      roll+=5;
+      yaw+=1;
+      pitch+=1;
+      if (roll > 30){
+          positive = false;
+      }
+    }else{
+      roll-=5;
+      pitch-=1;
+      yaw-=1;
+      if (roll < -30){
+          positive = true;
+      }
+    }
     //yaw+=10;
-    roll+=10;
+    //roll+=10;
     //pitch+=10;
   }
 

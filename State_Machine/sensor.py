@@ -37,8 +37,8 @@ class I2C_sensors:
     
         self.altimeter = BMP085.BMP085()
         self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
-        self.createLogFile()
-        self.calibration()
+        #self.createLogFile()
+        #self.calibration()
 
     #read sensor data raw
     def readData(self):

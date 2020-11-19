@@ -49,7 +49,7 @@ class IdleState (State):
             [radio_valid, x] = radio.decode_message()
             
             if (radio_valid):
-              #  print (radio.button_event_state)
+              print (radio.button_event_state)
                 if (radio.button_event_state[motorEnable]):
                     looping = False
                     return "EngOnBtn"

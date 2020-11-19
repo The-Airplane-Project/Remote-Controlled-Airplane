@@ -44,7 +44,7 @@ class radio_comm:
         
         self.start = time.time()
         
-        self.button_event_state = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.button_event_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         #initialize buttons
         #bit8 bit7 bit6  bit5   bit4 bit3 bit2 bit1
@@ -58,13 +58,16 @@ class radio_comm:
         self.joy_Y = joy_button()
         self.joy_A = joy_button()
         self.joy_B = joy_button()
-        
+
+        self.joy_dpad_left = joy_button()
+        self.joy_dpad_right = joy_button()
+        self.joy_dpad_up = joy_button()
+        self.joy_dpad_down = joy_button()
         #Arming flags
         self.neg_throttle_flag_1 = False
         self.pos_throttle_flag_2 = False
         self.cen_throttle_flag_3 = False
 
-        self.previousMessage = [90, 90, 120, 90, 0, 71] #MUST CHECK NOMINAL VALUES!!!!!!!!!!!!!!!!!!!!!!!!!11
 
     def start_radio(self):
         self.radio = NRF24(self.pi, spidev.SpiDev())
@@ -142,39 +145,43 @@ class radio_comm:
 
         btns_value = 0
         trim_offset = 0
-        if (self.message_valid()):
-            self.previousMessage = self.receivedMessage
-            btns_value = int(self.receivedMessage[4])
+
+        btns_value = int(self.receivedMessage[4])
+        dpad_value = int(self.receivedMessage[5])
+        #saving trigger event states from each button
+        self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
+        self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
+        self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
+        self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
+        self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
+        self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
+        self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
+        self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
         
-            #saving trigger event states from each button
-            self.button_event_state[0] = self.joy_B.state(btns_value >> 0 & 1)
-            self.button_event_state[1] = self.joy_A.state(btns_value >> 1 & 1)
-            self.button_event_state[2] = self.joy_Y.state(btns_value >> 2 & 1)
-            self.button_event_state[3] = self.joy_X.state(btns_value >> 3 & 1)
-            self.button_event_state[4] = self.joy_selec.state(btns_value >> 4 & 1)
-            self.button_event_state[5] = self.joy_view.state(btns_value >> 5 & 1)
-            self.button_event_state[6] = self.joy_RB.state(btns_value >> 6 & 1)
-            self.button_event_state[7] = self.joy_LB.state(btns_value >> 7 & 1)
-            
-            print(self.previousMessage)
-            #Determine trim setting
-            
-            if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
-                trim_offset = 0
-            elif (self.button_event_state[7]): #LB pressed
-                trim_offset -= 1
-            elif (self.button_event_state[6]): #RB pressed
-                trim_offset += 1
+        self.button_event_state[8] = self.joy_dpad_right.state(dpad_value >> 0 & 1)
+        self.button_event_state[9] = self.joy_dpad_left.state(dpad_value >> 1 & 1)
+        self.button_event_state[10] = self.joy_dpad_down.state(dpad_value >> 2 & 1)
+        self.button_event_state[11] = self.joy_dpad_up.state(dpad_value >> 3 & 1)
+        
+        
+        print(self.receivedMessage)
+        #Determine trim setting
+        
+        if (self.button_event_state[6] and self.button_event_state[7]): # both LB RB buttons are true
+            trim_offset = 0
+        elif (self.button_event_state[7]): #LB pressed
+            trim_offset -= 1
+        elif (self.button_event_state[6]): #RB pressed
+            trim_offset += 1
     
-            #decode to angles first
-            self.previousMessage[aileron] = (self.previousMessage[aileron] - 100) /2
-            self.previousMessage[rudder] = (self.previousMessage[rudder] - 100) / 2
-            self.previousMessage[elevator] = (self.previousMessage[elevator] - 100) /2
+        #decode to angles first
+        self.receivedMessage[aileron] = (self.receivedMessage[aileron] - 100) /2
+        self.receivedMessage[rudder] = (self.receivedMessage[rudder] - 100) / 2
+        self.receivedMessage[elevator] = (self.receivedMessage[elevator] - 100) /2
         
-        else:
-            print ("Invalid Message")
+        
         #return aileron, rudder, elevator, escValue, trimoffset
-        return True, [self.previousMessage[aileron], self.previousMessage[rudder], self.previousMessage[elevator], self.previousMessage[escValue], trim_offset]
+        return True, [self.receivedMessage[aileron], self.receivedMessage[rudder], self.receivedMessage[elevator], self.receivedMessage[escValue], trim_offset]
 
     def message_valid(self):
 
@@ -209,19 +216,19 @@ class radio_comm:
         # 4 level flight
         # 5 autonomous takeoff
         # 6 autonomous land
-        bit4 = 0
+        state_num = 0
         if (i2c_sensors.roll>0):
-            bit4+=128
+            state_num+=128
         if (i2c_sensors.yaw>0):
-            bit4+=64
+            state_num+=64
         if (i2c_sensors.pitch>0):
-            bit4+=32
+            state_num+=32
 
-        bit4+=stateEnum
-        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), bit4, abs(round(i2c_sensors.altitude)), abs(round(i2c_sensors.vertical_speed))]
-        
-        while len(message) < self.MAX_PKG_SIZE:
-            message.append(0)
+        state_num+=stateEnum
+        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), state_num, abs(round(i2c_sensors.altitude)), abs(round(i2c_sensors.vertical_speed))]
+        print("Sending: {}".format(message))
+        #while len(message) < self.MAX_PKG_SIZE:
+        #    message.append(0)
         self.radio.write(message)
 
     def soft_reset(self):

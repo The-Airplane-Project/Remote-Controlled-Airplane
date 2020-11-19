@@ -1,0 +1,33 @@
+
+(cl:in-package :asdf)
+
+(defsystem "rosflight_msgs-msg"
+  :depends-on (:roslisp-msg-protocol :roslisp-utils :geometry_msgs-msg
+               :std_msgs-msg
+)
+  :components ((:file "_package")
+    (:file "Airspeed" :depends-on ("_package_Airspeed"))
+    (:file "_package_Airspeed" :depends-on ("_package"))
+    (:file "Attitude" :depends-on ("_package_Attitude"))
+    (:file "_package_Attitude" :depends-on ("_package"))
+    (:file "AuxCommand" :depends-on ("_package_AuxCommand"))
+    (:file "_package_AuxCommand" :depends-on ("_package"))
+    (:file "Barometer" :depends-on ("_package_Barometer"))
+    (:file "_package_Barometer" :depends-on ("_package"))
+    (:file "BatteryStatus" :depends-on ("_package_BatteryStatus"))
+    (:file "_package_BatteryStatus" :depends-on ("_package"))
+    (:file "Command" :depends-on ("_package_Command"))
+    (:file "_package_Command" :depends-on ("_package"))
+    (:file "Error" :depends-on ("_package_Error"))
+    (:file "_package_Error" :depends-on ("_package"))
+    (:file "GNSS" :depends-on ("_package_GNSS"))
+    (:file "_package_GNSS" :depends-on ("_package"))
+    (:file "GNSSFull" :depends-on ("_package_GNSSFull"))
+    (:file "_package_GNSSFull" :depends-on ("_package"))
+    (:file "OutputRaw" :depends-on ("_package_OutputRaw"))
+    (:file "_package_OutputRaw" :depends-on ("_package"))
+    (:file "RCRaw" :depends-on ("_package_RCRaw"))
+    (:file "_package_RCRaw" :depends-on ("_package"))
+    (:file "Status" :depends-on ("_package_Status"))
+    (:file "_package_Status" :depends-on ("_package"))
+  ))

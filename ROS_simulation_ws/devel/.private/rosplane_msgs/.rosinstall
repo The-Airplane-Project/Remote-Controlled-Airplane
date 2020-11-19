@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosplane_msgs/setup.sh

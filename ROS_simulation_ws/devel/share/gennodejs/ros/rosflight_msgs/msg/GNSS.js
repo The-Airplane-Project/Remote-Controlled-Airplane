@@ -1,0 +1,1 @@
+/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosflight_msgs/share/gennodejs/ros/rosflight_msgs/msg/GNSS.js

@@ -1,0 +1,8 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~CHI_INFTY" : \b [double] Chi Infinity min: 0.0, default: 1.0472, max: 1.5708
+- \b "~K_PATH" : \b [double] K Path min: 0.0, default: 0.025, max: 1.0
+- \b "~K_ORBIT" : \b [double] K Orbit min: 0.0, default: 4.0, max: 15.0
+

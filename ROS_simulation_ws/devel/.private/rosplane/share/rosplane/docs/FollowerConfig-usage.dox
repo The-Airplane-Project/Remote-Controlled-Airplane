@@ -1,0 +1,9 @@
+\subsubsection usage Usage
+\verbatim
+<node name="rosplane" pkg="rosplane" type="rosplane">
+  <param name="CHI_INFTY" type="double" value="1.0472" />
+  <param name="K_PATH" type="double" value="0.025" />
+  <param name="K_ORBIT" type="double" value="4.0" />
+</node>
+\endverbatim
+

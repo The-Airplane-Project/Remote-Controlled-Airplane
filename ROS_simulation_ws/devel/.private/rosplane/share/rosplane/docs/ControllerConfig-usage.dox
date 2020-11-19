@@ -1,0 +1,32 @@
+\subsubsection usage Usage
+\verbatim
+<node name="rosplane" pkg="rosplane" type="rosplane">
+  <param name="TRIM_E" type="double" value="0.0" />
+  <param name="TRIM_A" type="double" value="0.0" />
+  <param name="TRIM_R" type="double" value="0.0" />
+  <param name="TRIM_T" type="double" value="0.6" />
+  <param name="COURSE_KP" type="double" value="0.7329" />
+  <param name="COURSE_KD" type="double" value="0.0" />
+  <param name="COURSE_KI" type="double" value="0.0" />
+  <param name="ROLL_KP" type="double" value="1.17" />
+  <param name="ROLL_KD" type="double" value="-0.13" />
+  <param name="ROLL_KI" type="double" value="0.0" />
+  <param name="PITCH_KP" type="double" value="1.0" />
+  <param name="PITCH_KD" type="double" value="-0.17" />
+  <param name="PITCH_KI" type="double" value="0.0" />
+  <param name="PITCH_FF" type="double" value="0.0" />
+  <param name="AS_PITCH_KP" type="double" value="-0.0713" />
+  <param name="AS_PITCH_KD" type="double" value="-0.0635" />
+  <param name="AS_PITCH_KI" type="double" value="0.0" />
+  <param name="AS_THR_KP" type="double" value="3.2" />
+  <param name="AS_THR_KD" type="double" value="0.0" />
+  <param name="AS_THR_KI" type="double" value="1.0" />
+  <param name="ALT_KP" type="double" value="0.045" />
+  <param name="ALT_KD" type="double" value="0.0" />
+  <param name="ALT_KI" type="double" value="0.01" />
+  <param name="BETA_KP" type="double" value="-0.1164" />
+  <param name="BETA_KD" type="double" value="0.0" />
+  <param name="BETA_KI" type="double" value="-0.0037111" />
+</node>
+\endverbatim
+

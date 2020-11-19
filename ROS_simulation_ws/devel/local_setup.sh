@@ -1,0 +1,1 @@
+/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/catkin_tools_prebuild/local_setup.sh

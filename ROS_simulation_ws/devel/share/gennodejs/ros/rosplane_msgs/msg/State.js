@@ -1,0 +1,1 @@
+/home/aghosh/Remote-Controlled-Airplane/ROS_simulation_ws/devel/.private/rosplane_msgs/share/gennodejs/ros/rosplane_msgs/msg/State.js

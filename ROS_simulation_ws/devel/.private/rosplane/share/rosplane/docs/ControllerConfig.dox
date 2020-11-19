@@ -1,0 +1,31 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~TRIM_E" : \b [double] Elevator trim min: -1.0, default: 0.0, max: 1.0
+- \b "~TRIM_A" : \b [double] Aileron trim min: -1.0, default: 0.0, max: 1.0
+- \b "~TRIM_R" : \b [double] Rudder trim min: -1.0, default: 0.0, max: 1.0
+- \b "~TRIM_T" : \b [double] Throttle trim min: 0.0, default: 0.6, max: 1.0
+- \b "~COURSE_KP" : \b [double] Course proportional gain min: 0.0, default: 0.7329, max: 2.0
+- \b "~COURSE_KD" : \b [double] Course derivative gain min: -1.0, default: 0.0, max: 0.0
+- \b "~COURSE_KI" : \b [double] Course integral gain min: 0.0, default: 0.0, max: 0.2
+- \b "~ROLL_KP" : \b [double] Roll proportional gain min: 0.0, default: 1.17, max: 3.0
+- \b "~ROLL_KD" : \b [double] Roll derivative gain min: -1.0, default: -0.13, max: 0.0
+- \b "~ROLL_KI" : \b [double] Roll integral gain min: 0.0, default: 0.0, max: 0.2
+- \b "~PITCH_KP" : \b [double] Pitch proportional gain min: 0.0, default: 1.0, max: 3.0
+- \b "~PITCH_KD" : \b [double] Pitch derivative gain min: -0.4, default: -0.17, max: 0.0
+- \b "~PITCH_KI" : \b [double] Pitch integral gain min: 0.0, default: 0.0, max: 0.2
+- \b "~PITCH_FF" : \b [double] Pitch feed forward value min: -1.0, default: 0.0, max: 1.0
+- \b "~AS_PITCH_KP" : \b [double] Airspeed with pitch proportional gain min: 0.0, default: -0.0713, max: 0.2
+- \b "~AS_PITCH_KD" : \b [double] Airspeed with pitch derivative gain min: -0.2, default: -0.0635, max: 0.0
+- \b "~AS_PITCH_KI" : \b [double] Airspeed with pitch integral gain min: 0.0, default: 0.0, max: 0.2
+- \b "~AS_THR_KP" : \b [double] Airspeed with throttle proportional gain min: 0.0, default: 3.2, max: 10.0
+- \b "~AS_THR_KD" : \b [double] Airspeed with throttle derivative gain min: -5.0, default: 0.0, max: 0.0
+- \b "~AS_THR_KI" : \b [double] Airspeed with throttle integral gain min: 0.0, default: 1.0, max: 10.0
+- \b "~ALT_KP" : \b [double] Altitude proportional gain min: 0.0, default: 0.045, max: 0.1
+- \b "~ALT_KD" : \b [double] Altitude derivative gain min: -0.05, default: 0.0, max: 0.0
+- \b "~ALT_KI" : \b [double] Altitude integral gain min: 0.0, default: 0.01, max: 0.05
+- \b "~BETA_KP" : \b [double] Side slip proportional gain min: 0.0, default: -0.1164, max: 0.3
+- \b "~BETA_KD" : \b [double] Side slip derivative gain min: -0.15, default: 0.0, max: 0.0
+- \b "~BETA_KI" : \b [double] Side slip integral gain min: 0.0, default: -0.0037111, max: 0.05
+

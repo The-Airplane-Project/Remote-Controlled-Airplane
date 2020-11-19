@@ -30,29 +30,29 @@ int main() {
     int count = 0;
     uint8_t receivedMsg[RAW_SERIAL_SIZE] = { 0 };
     Gamepad gamepad;
-    //while (gamepad.connect() == false) {
-    //    Sleep(200);
-    //}
+    while (gamepad.connect() == false) {
+       Sleep(200);
+    }
 
     while (1) {
         if (gamepad.Refresh()) {
 
             //cout << "Controller connected on port " << gamepad.GetPort() << endl;
 
-            //gamepad.encode();
+            gamepad.encode();
 
             cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY])
                 << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
 
-            cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " 
+            /*cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " 
                 << std::to_string(gamepad.msg[Buttons]) << "   DPad: "<< std::to_string(gamepad.msg[Dpads])
                 << " Crc8: "<< std::to_string(gamepad.msg[Crc8_1])
                 << " "<< std::to_string(gamepad.msg[Crc8_2]) << endl;
-            //Sleep(10);
-        }
-        
+            *///Sleep(10);
+		}
         if (1) {
-            gamepad.encode();
+            //gamepad.encode();
+
             for (int i = 0; i < MSGLEN; i++) {
                 command[i] = gamepad.msg[i];
             }
@@ -70,13 +70,13 @@ int main() {
         }
 
         //delay
-        Sleep(5);
+        Sleep(10);
 
         //read from arduino output
         
-        
-        gamepad.decode(port, receivedMsg);
-        if (gamepad.receive_new_data) {
+		do {
+			gamepad.decode(port, receivedMsg);
+		} while (!gamepad.receive_new_data);
             GetSystemTime(&st);
             printf("The system time is: %02d:%02d:%02d:%02d ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
             cout << count << "ESP responds: ";
@@ -87,7 +87,7 @@ int main() {
             }
             cout << endl;
             gamepad.receive_new_data = false;
-        }
+        
         count++;
         //delay
         //Sleep(50);
@@ -109,8 +109,9 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
     static char rc[1] = { 0 };
     static bool stop_loop = false;
     static int n;
-    //while (port->ReadData(rc, 1) == -1) {}
-    cout << "decoding" << endl;
+    
+	//while (port->ReadData(rc, 1) == -1) {}
+   // cout << "decoding" << endl;
     for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
         receivedMessage[i] = 0;
     }

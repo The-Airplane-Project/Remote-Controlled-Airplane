@@ -76,6 +76,7 @@ void recvSerial() {
       }
     }
   }
+  //newData = true;
 }
 
 bool incoming_serial_valid(){
@@ -153,11 +154,16 @@ void setup(void){
   
   radio.enableDynamicPayloads() ;
   radio.powerUp() ;  
-  
+  while(Serial.available()<=0){}
 }
 
 void loop(void){
-  
+    incomingRadio[0] = 0;//outgoingRadio[0];
+    incomingRadio[1] = 0;//outgoingRadio[1];
+    incomingRadio[2] = 0;//outgoingRadio[2];
+    incomingRadio[3] = 0;//outgoingRadio[3];
+    incomingRadio[4] = 0;//outgoingRadio[4];
+    incomingRadio[5] = 0;//outgoingRadio[5];
   recvSerial();
   
   if (newData){
@@ -172,6 +178,7 @@ void loop(void){
     incomingRadio[5] = outgoingRadio[5];
     
     //
+    incoming_msg = true;
     newData = false;
     }
     
@@ -183,8 +190,8 @@ void loop(void){
     incoming_msg = true;
   }
     radio.stopListening();*/
-    incoming_msg = true;
-    delay(5);
+    
+    delay(10);
 
 
     //testing part
@@ -205,11 +212,12 @@ void loop(void){
     //incoming_msg = true;
     
     //
+   
   if (incoming_msg){
     encode_to_Serial();
     for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
       Serial.write(send_to_serial[i]);
-      Serial.flush();
+      //Serial.flush();
     }
     //Serial.flush();
     //delay(50);

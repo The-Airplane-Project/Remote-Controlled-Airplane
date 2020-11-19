@@ -216,8 +216,8 @@ void Gamepad::encode() {
 	/// (value - 100)/2
 
 
-	msg[Start] = 251; //ASCII for 'A' -->Start
-	msg[End] = 252;//ASCII for 'S' --> Stop
+	msg[Start] = 251; //ASCII for Start
+	msg[End] = 252;//ASCII for  Stop
 	//convert magnitude to angle 
 	//leftX, aileron, +23 --> -23
 
@@ -315,14 +315,16 @@ void Gamepad::encode() {
 	
 	msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
 	
+	/*
 	//Testing only
-	msg[Start] = 251;
-	msg[LeftStickX] = 90;
+	//msg[Start] = 251;
+	//msg[LeftStickX] = 90;
 	msg[LeftStickY] = 100;
 	msg[RightStickY] = 249;
 	msg[Rudder] = 220;
 	msg[Buttons] = 121;
-	msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
+	*/msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
+	
 	msg[Crc8_1] = 0;
 	msg[Crc8_2] = 0;
 	msg[End] = 252;

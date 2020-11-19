@@ -90,8 +90,10 @@ void loop(void){
     radio.stopListening();
   if (incoming_msg){
     encode_to_Serial();
-    Serial.println(send_to_serial);
-    Serial.flush();
+    while
+    Serial.println("testing");
+    //Serial.println(send_to_serial);
+    //Serial.flush();
   } 
     //encode back to Windows
     

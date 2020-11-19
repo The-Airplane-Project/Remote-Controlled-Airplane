@@ -10,3 +10,10 @@ Engine start: screen switch button (to prevent the engine from accidentally star
 Engine stop: option button \
 Elevator trim Up: RB button (2 deg per press, max 10 deg)\
 Elevator trim Down: LB button (2 deg per press, max 10 deg)\
+
+## To run ROS
+in catkin_ws/devel, run the following commands:
+setup.bat
+call local_setup.bat
+
+Launch ros_node and rviz (will integrate to a roslaunch file in the future), use rviz setting stored in src of the_professional folder

@@ -184,6 +184,7 @@ void loop(void){
   
   if (newData){
     radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
+    delay(100);
     newData = false;
     
     //Testing part without the hardware
@@ -204,18 +205,18 @@ void loop(void){
 
   static int wait_radio = 0;
   //while radio unavailable continue waiting until 0.5 secs
-  while(!radio.available() && (wait_radio < 50)){
+  /*while(!radio.available() && (wait_radio < 50)){
     //set count down timer
     wait_radio ++;
     delay(10);
-    }
+    }*/
     wait_radio = 0;
     
   if (radio.available()){
     radio.read(incomingRadio, sizeof(incomingRadio));
     incoming_msg = true;
   }
-    radio.stopListening();
+    
     
     delay(10);
 
@@ -238,16 +239,21 @@ void loop(void){
     //incoming_msg = true;
     
     //
-  
+    incomingRadio[0] = 0;
+    incomingRadio[1] = 0;
+    incomingRadio[2] = 0;
+    incomingRadio[3] = 2;
+    incomingRadio[4] = 1;
+    incomingRadio[5] = 0;
   //Clearing the message to be sent
   for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
     send_to_serial[i] = 0;
   }
-  
+  incoming_msg = true;
   if (incoming_msg){
     encode_to_Serial();
     incoming_msg = false;
   }
   write_to_serial();
-     
+  radio.stopListening();  
 }

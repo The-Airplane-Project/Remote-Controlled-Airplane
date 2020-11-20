@@ -10,7 +10,7 @@ Serial::Serial(const char* portName)// Does not work yet for some reason. Manual
     std::string name = portName; //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
     std::wstring comID = comPrefix + ws; //Has no effect yet. Will have effect when "comID.c_str()" is used instead of a literal string
     //Try to connect to the given port throuh CreateFile
-    this->hSerial = CreateFile(L"\\\\.\\COM4"/*comID.c_str()*/,
+    this->hSerial = CreateFile(L"\\\\.\\COM3"/*comID.c_str()*/,
         GENERIC_READ | GENERIC_WRITE,
         0,
         NULL,

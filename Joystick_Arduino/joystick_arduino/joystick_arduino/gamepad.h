@@ -313,7 +313,7 @@ void Gamepad::encode() {
 		D_pads += 1;
 	}
 	
-	msg[Dpads] = D_pads; //TODO: need to implement theh DPAD checker
+	msg[Dpads] = D_pads;
 	
 	/*
 	//Testing only

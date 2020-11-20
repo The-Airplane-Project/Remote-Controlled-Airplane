@@ -206,7 +206,7 @@ class radio_comm:
 
     def send_message(self, stateEnum, i2c_sensors):
         # grab variables from i2c_sensor, ultrasound, and send
-        #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude -- vertical_speed
+        #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude_byte1 -- altitude_byte2
         # 1 for positive, 0 for negative
         # roll yaw pitch - 0 - [ State Machine]
         # 0 idle
@@ -216,16 +216,45 @@ class radio_comm:
         # 4 level flight
         # 5 autonomous takeoff
         # 6 autonomous land
-        state_num = 0
+        byte4 = 0
         if (i2c_sensors.roll>0):
-            state_num+=128
+            byte4+=128 #set bit 7
         if (i2c_sensors.yaw>0):
-            state_num+=64
+            byte4+=64 #set bit 6
         if (i2c_sensors.pitch>0):
-            state_num+=32
+            byte4+=32 #set bit 5
 
-        state_num+=stateEnum
-        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), state_num, abs(round(i2c_sensors.altitude)), abs(round(i2c_sensors.vertical_speed))]
+        altitude = round(i2c_sensors.altitude)
+
+        if altitude < 0:
+            altitude = abs(altitude)
+            if (altitude > 32767):
+                altitude = 32767
+            #print (num)
+            alt_1 = (altitude & 0b11111111)
+            alt_2 = ((altitude>>8) & 0b11111111)
+            alt_2 = alt_2 | (0b1<<7)
+        else:
+            if (altitude > 32767):
+                altitude = 32767
+            #print(num)
+            alt_1 = (altitude & 0b11111111)
+            alt_2 = ((altitude>>8) & 0b11111111)
+        
+        #print ("Number:" , bin(num))
+        #print ("Byte 0:", bin(x))
+        #print ("Byte 1:", bin(y))
+        
+        #Decode algorithm for altitude
+        #if (y & (0b1 << 7)):
+        #    decode_num = 0-(x | ((y&0b1111111)<<8))
+        #    print (decode_num)
+        #else:
+        #    print (x | (y<<8))
+        
+        byte4+=stateEnum
+        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), byte4, alt_1, alt_2]
+        
         print("Sending: {}".format(message))
         #while len(message) < self.MAX_PKG_SIZE:
         #    message.append(0)

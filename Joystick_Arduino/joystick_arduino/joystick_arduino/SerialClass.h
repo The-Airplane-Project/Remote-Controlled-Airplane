@@ -6,7 +6,6 @@
 
 
 
-
 class Serial
 {
 private:

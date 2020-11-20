@@ -1,5 +1,4 @@
-//Use with ESP8266 Node-MCU
-//
+//Use with Arduino Test only
 //By Ayush Ghosh and Steven Feng
 
 #include <SPI.h>
@@ -12,27 +11,29 @@
 //#define D8 15 // CSN to pin4 NRF onlyif is present a PullDown resistor 3.3/4.7 Kohm
 
 const int MSG_LEN_SERIAL = 10;
+
 const int RAW_SERIAL_SIZE = 8;
+
 const int DATA_SIZE = 6;
 
-//Flags
-boolean newData = false;
-bool incoming_msg = false;
-
-//Serial data incoming
+//Serial data incoming and outgoing
 uint8_t incoming_ser_msg[RAW_SERIAL_SIZE] = {0};
-
-//Outgoing serial message
-char send_to_serial[MSG_LEN_SERIAL] = {0};
+uint8_t outgoing_ser_msg[RAW_SERIAL_SIZE] = {0};
 
 //Radio data incoming ans outgoing
 char outgoingRadio[DATA_SIZE] = {0}; // an array to store the received data
 char incomingRadio[DATA_SIZE] = {0};
 
-//Initialize radio object
+boolean newData = false;
+
+char send_to_serial[MSG_LEN_SERIAL] = {0};
+
+bool incoming_msg = false;
+
 RF24 radio(D1, D2); //CE-CSN
 
-void read_from_serial() {
+
+void recvSerial() {
   static byte ndx = 0;
   static char startMarker = 251;
   static char endMarker = 252;
@@ -75,19 +76,17 @@ void read_from_serial() {
       }
     }
   }
+  //newData = true;
 }
 
 bool incoming_serial_valid(){
 uint8_t crc8_test [DATA_SIZE] = {0};
-  
   for (uint8_t i = 0; i < DATA_SIZE; i++){
     crc8_test[i] = incoming_ser_msg[i];
   }
-  
   static uint8_t crc8_total = 0;
   crc8_total = calc_crc8(crc8_test, uint8_t(sizeof(crc8_test)));
-
-  //chekcing the calculated crc8 with the combined crc bytes sent with radio
+  
   if (crc8_total == (incoming_ser_msg[6] | incoming_ser_msg[7])){
     for (uint8_t i = 0; i < DATA_SIZE; i++){
     outgoingRadio[i] = incoming_ser_msg[i];
@@ -95,12 +94,17 @@ uint8_t crc8_test [DATA_SIZE] = {0};
     return true; //Data is valid and outgoingRadio will be sent
   }
 
-  //Data is invalid (because crc8 check failed to match)so message wont be sent
+  //Data is invalid so message wont be sent
   return false;
 }
 void encode_to_Serial(){
   static char startMarker = 253;
   static char endMarker = 254;
+  
+  //Clearing the message to be sent
+  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
+    send_to_serial[i] = 0;
+  }
   
   send_to_serial[0] = startMarker;
   
@@ -108,17 +112,16 @@ void encode_to_Serial(){
   for(uint8_t i = 0; i < DATA_SIZE; i++){
     send_to_serial[i+1] = incomingRadio[i];
     }
-  
+  //uint8_t crc8_msg[DATA_SIZE] = {0};
+  //for (uint8_t i = 0; i < DATA_SIZE; i++) {
+  //  crc8_msg[i] = incomingRadio[i];
+  //}
   static uint8_t crc8_total = 0;
   uint8_t crc8_test [DATA_SIZE] = {0};
-  
-  //Copy incomind radio into crc8 array for calculation
   for (uint8_t i = 0; i < DATA_SIZE; i++){
     crc8_test[i] = incomingRadio[i];
   }
-  
   crc8_total = calc_crc8(crc8_test, uint8_t(sizeof(crc8_test)));
-  
   send_to_serial[DATA_SIZE+1] = (crc8_total & 0b11110000);
   send_to_serial[DATA_SIZE+2] = (crc8_total & 0b00001111);
   send_to_serial[DATA_SIZE+3] = endMarker;
@@ -139,16 +142,6 @@ uint8_t calc_crc8(uint8_t *datagram, uint8_t len) {
   return crc;
 }
 
-void write_to_serial(){
-  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
-      Serial.write(send_to_serial[i]);
-      //Serial.flush();
-    }
-    
-    //Serial.flush();
-    //delay(50);
-}
-
 void setup(void){
   Serial.begin(115200) ;
   
@@ -165,57 +158,38 @@ void setup(void){
 }
 
 void loop(void){
-    //resetting to zeros
-    incomingRadio[0] = 0;
-    incomingRadio[1] = 0;
-    incomingRadio[2] = 0;
-    incomingRadio[3] = 0;
-    incomingRadio[4] = 0;
-    incomingRadio[5] = 0;
-
-    outgoingRadio[0] = 0;
-    outgoingRadio[1] = 0;
-    outgoingRadio[2] = 0;
-    outgoingRadio[3] = 0;
-    outgoingRadio[4] = 0;
-    outgoingRadio[5] = 0;
-    
-    read_from_serial();
+    incomingRadio[0] = 0;//outgoingRadio[0];
+    incomingRadio[1] = 0;//outgoingRadio[1];
+    incomingRadio[2] = 0;//outgoingRadio[2];
+    incomingRadio[3] = 0;//outgoingRadio[3];
+    incomingRadio[4] = 0;//outgoingRadio[4];
+    incomingRadio[5] = 0;//outgoingRadio[5];
+  recvSerial();
   
   if (newData){
-    radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
-    newData = false;
+    //radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
     
-    //Testing part without the hardware
-    /*
+    //Testing part
     incomingRadio[0] = outgoingRadio[0];
     incomingRadio[1] = outgoingRadio[1];
     incomingRadio[2] = outgoingRadio[2];
     incomingRadio[3] = outgoingRadio[3];
     incomingRadio[4] = outgoingRadio[4];
     incomingRadio[5] = outgoingRadio[5];
-    */
-    }
-
-  //At this point incoming serial is read and valid data has been sent over radio to RPI
-  //Next listen for reply from RPI and send
-  
-  radio.startListening();
-
-  static int wait_radio = 0;
-  //while radio unavailable continue waiting until 0.5 secs
-  while(!radio.available() && (wait_radio < 50)){
-    //set count down timer
-    wait_radio ++;
-    delay(10);
-    }
-    wait_radio = 0;
     
+    //
+    incoming_msg = true;
+    newData = false;
+    }
+    
+  /*radio.startListening();
+  
   if (radio.available()){
-    radio.read(incomingRadio, sizeof(incomingRadio));
+    //Deactivated cause of test
+    //radio.read(incomingRadio, sizeof(incomingRadio));
     incoming_msg = true;
   }
-    radio.stopListening();
+    radio.stopListening();*/
     
     delay(10);
 
@@ -238,16 +212,17 @@ void loop(void){
     //incoming_msg = true;
     
     //
-  
-  //Clearing the message to be sent
-  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
-    send_to_serial[i] = 0;
-  }
-  
+   
   if (incoming_msg){
     encode_to_Serial();
-    incoming_msg = false;
-  }
-  write_to_serial();
-     
+    for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
+      Serial.write(send_to_serial[i]);
+      //Serial.flush();
+    }
+    //Serial.flush();
+    //delay(50);
+    
+  } 
+    
+    
 }

@@ -92,6 +92,7 @@ class motorController:
 
 
         #write to servos
+        print(self.aileronLeftAngle, self.aileronRightAngle, self.elevatorAngle, self.rudderAngle)
         self.aileronLeft.set_angle(self.aileronLeftAngle)
         self.aileronRight.set_angle(self.aileronRightAngle)
         self.elevator.set_angle(self.elevatorAngle)
@@ -122,11 +123,11 @@ class motorController:
 
 if __name__ == "__main__":
     pwm = pigpio.pi()
-    servo = motorController(25, 22, 5, 24, 21, pwm)
-    aileronValue_ = 90
-    rudderAngle_ = 90
-    elevatorAngle_ = 90
+    servo = motorController(25, 22, 13, 24, 21, pwm)
+    aileronValue_ = 10
+    rudderAngle_ = 10
+    elevatorAngle_ = 10
     escValue_ = 0
-    trimoffset = 0
+    trimoffset =0
     servo.write_motor(aileronValue_, rudderAngle_, elevatorAngle_, escValue_, trimoffset)
     print ("lol")

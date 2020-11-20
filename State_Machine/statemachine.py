@@ -49,7 +49,7 @@ class IdleState (State):
             [radio_valid, x] = radio.decode_message()
             
             if (radio_valid):
-              print (radio.button_event_state)
+                print (radio.button_event_state)
                 if (radio.button_event_state[motorEnable]):
                     looping = False
                     return "EngOnBtn"
@@ -96,7 +96,7 @@ class StandbyState(State):
                 if (success):
                     if (msg_decode != []):
                         #Write The Motors in order: (aileronValue_, rudderAngle_, elevatorAngle_, escValue_=0, trimoffset)
-                        
+                        print(msg_decode[0], msg_decode[1], msg_decode[2], 0, msg_decode[4])
                         motors.write_motor(msg_decode[0], msg_decode[1], msg_decode[2], 0, msg_decode[4])
 
                     time_out_counter += 1
@@ -123,7 +123,7 @@ class StandbyState(State):
                             radio.cen_throttle_flag_3 = True
                             time_out_counter = 0
                             return "Cruise"
-            
+
             except IndexError:
                 print ("Error occured in Standby State, index error") #log this later, but not print
                 return "Error"

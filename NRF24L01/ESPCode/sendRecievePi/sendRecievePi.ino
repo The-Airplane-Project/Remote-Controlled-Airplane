@@ -102,11 +102,6 @@ void encode_to_Serial(){
   static char startMarker = 253;
   static char endMarker = 254;
   
-  //Clearing the message to be sent
-  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
-    send_to_serial[i] = 0;
-  }
-  
   send_to_serial[0] = startMarker;
   
   //Copying incoming radio into 
@@ -243,11 +238,16 @@ void loop(void){
     //incoming_msg = true;
     
     //
-   
+  
+  //Clearing the message to be sent
+  for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
+    send_to_serial[i] = 0;
+  }
+  
   if (incoming_msg){
     encode_to_Serial();
-    write_to_serial();
     incoming_msg = false;
   }
+  write_to_serial();
      
 }

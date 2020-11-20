@@ -323,11 +323,11 @@ void Gamepad::encode() {
 	msg[RightStickY] = 249;
 	msg[Rudder] = 220;
 	msg[Buttons] = 121;
-	*/msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
-	
+	msg[Dpads] = (rand() % (249 - 0 + 1) + 0);
+	*/
 	msg[Crc8_1] = 0;
 	msg[Crc8_2] = 0;
-	msg[End] = 252;
+	
 
 	// Implement Crc8
 	uint8_t crc8_msg[6] = {0};

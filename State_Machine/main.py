@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #written by Ayush Ghosh and Steven Feng
 from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
+from
 import sys
 import time
 
@@ -20,6 +21,7 @@ class airplane:
 if __name__ == "__main__":
     drone = airplane()
     state_str = drone.run_state() #Only running idle state
+
     while True:
         state_str = drone.on_event(state_str)
         

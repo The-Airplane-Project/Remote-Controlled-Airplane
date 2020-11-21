@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="44dbe192-b157-40b6-938f-730777fd567a" name="Default Changelist" comment="Updated skeleton for I2C Sensor, ultrasound">
+      <change beforePath="$PROJECT_DIR$/Servos/servo_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Servos/servo_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/State_Machine/plane.py" beforeDir="false" afterPath="$PROJECT_DIR$/State_Machine/plane.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/State_Machine/ultrasound.py" beforeDir="false" afterPath="$PROJECT_DIR$/State_Machine/ultrasound.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="727816ef-fd6e-4c09-b0c0-6a007087811b" />
+  <component name="ProjectId" id="1jWkXIK5hsIYsGVSVIpBYtSab0e" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/State_Machine" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Home\OneDrive\Remote-Controlled-Airplane\State_Machine" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="44dbe192-b157-40b6-938f-730777fd567a" name="Default Changelist" comment="" />
+      <created>1603927273029</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1603927273029</updated>
+      <workItem from="1603927274565" duration="3195000" />
+      <workItem from="1604117121349" duration="90077000" />
+      <workItem from="1604208600914" duration="2788000" />
+      <workItem from="1604258825656" duration="10956000" />
+    </task>
+    <task id="LOCAL-00001" summary="Updated skeleton for I2C Sensor, ultrasound">
+      <created>1603949765053</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1603949765053</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Updated skeleton for I2C Sensor, ultrasound" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated skeleton for I2C Sensor, ultrasound" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1464" y="425" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1603927581797">
+      <screen x="0" y="0" width="2276" height="1240" />
+    </state>
+    <state x="1464" y="425" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2276.1240@0.0.2276.1240" timestamp="1603927581797" />
+    <state x="957" y="535" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1603927416947">
+      <screen x="0" y="0" width="2276" height="1240" />
+    </state>
+    <state x="957" y="535" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2276.1240@0.0.2276.1240" timestamp="1603927416947" />
+    <state x="1370" y="280" width="672" height="678" key="search.everywhere.popup" timestamp="1604264795652">
+      <screen x="0" y="0" width="2276" height="1240" />
+    </state>
+    <state x="1370" y="280" width="672" height="678" key="search.everywhere.popup/0.0.2276.1240@0.0.2276.1240" timestamp="1604264795652" />
+  </component>
+</project>

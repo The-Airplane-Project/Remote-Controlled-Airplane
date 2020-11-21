@@ -171,7 +171,8 @@ void loop(void){
     incomingRadio[2] = 0;
     incomingRadio[3] = 0;
     incomingRadio[4] = 0;
-    incomingRadio[5] = 0;
+    incomingRadio[5] = 1; //This is so it passes the crc8 check in Windows.
+    //TODO: Need to immplement a check in Windows to see whether this message is worth doing anything with.
 
     outgoingRadio[0] = 0;
     outgoingRadio[1] = 0;
@@ -184,7 +185,7 @@ void loop(void){
   
   if (newData){
     radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
-    delay(100);
+    delay(10);
     newData = false;
     
     //Testing part without the hardware
@@ -204,22 +205,19 @@ void loop(void){
   radio.startListening();
 
   static int wait_radio = 0;
-  //while radio unavailable continue waiting until 0.5 secs
-  /*while(!radio.available() && (wait_radio < 50)){
+  //while radio unavailable continue waiting until 0.05 secs
+  while(!radio.available() && (wait_radio < 5)){
     //set count down timer
     wait_radio ++;
     delay(10);
-    }*/
+    }
     wait_radio = 0;
     
   if (radio.available()){
     radio.read(incomingRadio, sizeof(incomingRadio));
-    incoming_msg = true;
-  }
-    
-    
+    //incoming_msg = true;
     delay(10);
-
+  }
 
     //testing part
     /*incomingRadio[0] = 250;
@@ -239,21 +237,24 @@ void loop(void){
     //incoming_msg = true;
     
     //
+    /*
     incomingRadio[0] = 0;
     incomingRadio[1] = 0;
     incomingRadio[2] = 0;
     incomingRadio[3] = 2;
     incomingRadio[4] = 1;
     incomingRadio[5] = 0;
+    */
+    
   //Clearing the message to be sent
   for (uint8_t i = 0; i < MSG_LEN_SERIAL; i++){
     send_to_serial[i] = 0;
   }
-  incoming_msg = true;
-  if (incoming_msg){
+  //incoming_msg = true;
+  //if (incoming_msg){
     encode_to_Serial();
     incoming_msg = false;
-  }
-  write_to_serial();
-  radio.stopListening();  
+  //}
+    write_to_serial();
+    radio.stopListening();  
 }

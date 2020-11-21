@@ -44,7 +44,7 @@ class IdleState (State):
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
 
-            radio.send_message(idle, i2c_sensors)
+            
             t = radio.read_from_radio()
             [radio_valid, x] = radio.decode_message()
             
@@ -53,6 +53,8 @@ class IdleState (State):
                 if (radio.button_event_state[motorEnable]):
                     looping = False
                     return "EngOnBtn"
+
+            radio.send_message(idle, i2c_sensors)
 
         print ("Its whack that you are here in this spot in IdleState. Something terribly wrong")
         return "Error"
@@ -87,7 +89,6 @@ class StandbyState(State):
                 #btn_num = 0 #int(input("Enter num: "))
                 #throt_num = int(input("Enter throttle: "))
                 #radio.receivedMessage = [10, 100, throt_num, 90, btn_num, 80]
-                radio.send_message(standby, i2c_sensors)
                 t = radio.read_from_radio()
 
                 #return aileron, rudder, elevator, escValue, trimoffset
@@ -124,6 +125,8 @@ class StandbyState(State):
                             time_out_counter = 0
                             return "Cruise"
 
+                radio.send_message(standby, i2c_sensors)
+
             except IndexError:
                 print ("Error occured in Standby State, index error") #log this later, but not print
                 return "Error"
@@ -147,7 +150,7 @@ class CruiseState (State):
             
             radio_valid = True
             while (radio_valid):
-                radio.send_message(cruise, i2c_sensors)
+                
                 t = radio.read_from_radio()
                 
                 #btn_num = int(input("Enter btn num. Entering 400 will eventually start emergency: "))
@@ -170,6 +173,8 @@ class CruiseState (State):
                 else:
                     return "Lost"
 
+                radio.send_message(cruise, i2c_sensors)
+
         except:    
             print ("MAYDAY-MAYDAY, Error occured in Cruise, restarting state")
             return "Error"
@@ -188,11 +193,13 @@ class EmergencyState (State):
             motors.ESC.stop
             #WRITE MOTOR ANGLES AND HOPE FOR THE BEST
             radio.soft_reset()
-            radio.send_message(emergency, i2c_sensors)
+            
             t = radio.read_from_radio()
             [radio_valid, msg_decode] = radio.decode_message()
             if (radio_valid and msg_decode != []):
                 return "Signal"
 
+            radio.send_message(emergency, i2c_sensors)
+            
         print ("Its whack that you are here in this spot in EmergencyState. Something terribly wrong")
         return "Error"

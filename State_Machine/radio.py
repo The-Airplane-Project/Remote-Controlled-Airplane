@@ -94,7 +94,7 @@ class radio_comm:
         
         #Wating for incomming message
         while not self.radio.available(0):
-            time.sleep(1/100)
+            time.sleep(1/100)#0.01 secs
             if time.time() - self.start > 2:
                 #print("Timed out.")
                 self.error_count += 1
@@ -111,7 +111,7 @@ class radio_comm:
         self.radio.read(self.receivedMessage, self.radio.getDynamicPayloadSize())
         #print("Received: {}".format(self.receivedMessage))
         self.radio.stopListening()
-        time.sleep(0.09)
+        time.sleep(1/100)#0.01 secs
         if (self.receivedMessage == [0, 0, 0, 0, 0, 0]):
             self.receivedMessage = []
         return True
@@ -133,6 +133,11 @@ class radio_comm:
         # have to store previous data
         # trim: check buttons, but only output -1, 0, or 1, for detrim, and trim
 
+        
+
+        if self.receivedMessage == [self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0]]:
+            return False, []
+
         if self.receivedMessage == []:
             self.counting_to_soft_reset += 1
             if (self.counting_to_soft_reset >= 2):
@@ -140,11 +145,8 @@ class radio_comm:
             else:
                 return True, []
 
-        if self.receivedMessage == [self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0],
-                                    self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0]]:
-            return False, []
-
         btns_value = 0
+        
         trim_offset = 0
 
         btns_value = int(self.receivedMessage[4])
@@ -260,6 +262,7 @@ class radio_comm:
         #while len(message) < self.MAX_PKG_SIZE:
         #    message.append(0)
         self.radio.write(message)
+        time.sleep(1/100)#0.01 secs
 
     def soft_reset(self):
         #restart the radio without changing member variables
@@ -272,7 +275,7 @@ class radio_comm:
     def stop_radio(self):
         #stops the radio without changing data variables
         self.radio.end()
-        return True
+        #return True
 
 if __name__ == "__main__":
     from motorController import motorController

@@ -16,6 +16,8 @@ class I2C_sensors:
     def __init__(self):
         self.refresh_time = 0.050 #20 hz
 
+        self.logging = False
+
         #IMU raw values
         self.accel = {}
         self.gyro= {}
@@ -38,7 +40,7 @@ class I2C_sensors:
         self.altimeter = BMP085.BMP085()
         self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
         #self.createLogFile()
-        #self.calibration()
+        #self.calibrate()
 
     #read sensor data raw
     def readData(self):
@@ -50,9 +52,9 @@ class I2C_sensors:
         self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
         self.prev_altitude = self.altitude
 
-    def calibration(self):
+    def calibrate(self):
         #calibrate here
-
+        self.createLogFile()
         #calibration complete
         return True
 
@@ -97,15 +99,16 @@ class I2C_sensors:
 
     #sensor thread
     def main(self):
-        sensors.readData()
-        sensors.convertSensor()
-        sensors.writeToFile()
+        if self.logging=True:
+            sensors.readData()
+            sensors.convertSensor()
+            sensors.writeToFile()
 
 #test program
 if __name__ == '__main__':
     sensors = I2C_sensors()
     
-    sensors.calibration()
+    sensors.calibrate()
     sensors.createLogFile()
     while (1):
         sensors.readData()

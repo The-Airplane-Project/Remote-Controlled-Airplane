@@ -39,7 +39,7 @@ class IdleState (State):
         radio.start_radio()
         idle = 1
         looping = True
-
+        i2c_sensors.logging = False
         while looping:
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
@@ -63,6 +63,7 @@ class IdleState (State):
 class StandbyState(State):
     def on_event(self, event):
         if (event == "Cruise"):
+            i2c_sensors.calibrate()
             return CruiseState()
         if (event == "EngOffBtn"):
             return IdleState()
@@ -75,6 +76,7 @@ class StandbyState(State):
 
     def run(self):
         print("Running StandbyState")
+        i2c_sensors.logging = False
         standby = 2
 
         self.reset_arm_sequence()
@@ -143,6 +145,7 @@ class CruiseState (State):
             
         return self
     def run(self):
+        i2c_sensors.logging = True
         cruise = 3
         try:
             print("Running CruiseState")
@@ -187,6 +190,7 @@ class EmergencyState (State):
         return self
     def run(self):
         print("Running EmergencyState")
+        i2c_sensors.logging = True
         emergency = 4
         radio_valid = False
         while (not radio_valid):

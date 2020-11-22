@@ -69,13 +69,13 @@ class I2C_sensors:
         #calibrate here
         self.createLogFile()
         #calibration complete
-        return True
+        #return True
 
     def createLogFile(self):
         #generate log file based on generation date
         now = datetime.now()
         date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
-        self.filename = './SensorLog/i2c_sensor'+str(date_time)+'.csv'
+        self.filename = '/home/pi/Remote-Controlled-Airplane/State_Machine/SensorLog/i2c_sensor'+str(date_time)+'.csv'
         with open (self.filename, mode='w') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
             file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])

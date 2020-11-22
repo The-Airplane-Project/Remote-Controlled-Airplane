@@ -38,6 +38,7 @@ class motorController:
     #takes in control surface angles and converts to motor angles
     def decode_angle(self, aileronValue_, rudderAngle_, elevatorAngle_ ):
         #figure out elevatorAngle_
+        elevatorAngle_ = -elevatorAngle_
         self.elevatorAngle = self.trim_conversion(elevatorAngle_)
         #convert to motor power
         self.elevatorAngle = round(-2.454*self.elevatorAngle + 92.45)

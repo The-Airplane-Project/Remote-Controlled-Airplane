@@ -37,15 +37,15 @@ class IdleState (State):
         return self
         
     def run(self):
-        filename_time = time.strftime("%Y%m%d-%H_%M_%S")
-        log_filename = "/home/pi/Remote-Controlled-Airplane/logs/" + filename_time + ".log"
-        os.makedirs(os.path.dirname(log_filename), exist_ok=True)
-        logging.basicConfig(filename=log_filename, filemode='a', level=logging.DEBUG)
+        #filename_time = time.strftime("%Y%m%d-%H_%M_%S")
+        #log_filename = "/home/pi/Remote-Controlled-Airplane/logs/" + filename_time + ".log"
+        #os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+        #logging.basicConfig(filename=log_filename, filemode='a', level=logging.DEBUG)
 
         print("Running IdleState")
         
-        localtime = time.asctime( time.localtime(time.time()) )
-        logging.debug('%s: Running IdleState', localtime)
+        #localtime = time.asctime( time.localtime(time.time()) )
+        #logging.debug('%s: Running IdleState', localtime)
         
         radio.start_radio()
         idle = 1
@@ -213,8 +213,9 @@ class EmergencyState (State):
         i2c_sensors.logging = True
         emergency = 4
         radio_valid = False
+        motors.write_motor(0, 0, 0, 0, 0)
+        motors.ESC.stop()
         while (not radio_valid):
-            motors.ESC.stop
             #WRITE MOTOR ANGLES AND HOPE FOR THE BEST
             radio.soft_reset()
             

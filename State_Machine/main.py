@@ -4,7 +4,7 @@ from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
 import sys
 import time
 from airplane_objects import i2c_sensors
-import threading
+#import threading
 ##Starting point of the function
 
 
@@ -21,8 +21,8 @@ class airplane:
     
 if __name__ == "__main__":
     drone = airplane()
-    t=threading.Thread(target=i2c_sensors.main)
-    t.start()
+ #   t=threading.Thread(target=i2c_sensors.main)
+ #   t.start()
 
     state_str = drone.run_state() #Only running idle state
     while True:

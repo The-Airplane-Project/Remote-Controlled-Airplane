@@ -44,11 +44,24 @@ class I2C_sensors:
 
     #read sensor data raw
     def readData(self):
-        self.accel = self.mpu9250.readAccel()
-        self.gyro = self.mpu9250.readGyro()
-        self.mag = self.mpu9250.readMagnet()
-
-        self.altitude = round(self.altimeter.read_pressure(),2)
+        try:
+            self.accel = self.mpu9250.readAccel()
+            time.sleep(0.01)
+            self.gyro = self.mpu9250.readGyro()
+            time.sleep(0.01)
+            self.altitude = -2
+            self.mag = self.mpu9250.readMagnet()
+            time.sleep(0.01)
+            self.altitude = 32000
+            self.altitude = round(self.altimeter.read_altitude(),2)
+            time.sleep(0.01)
+        except KeyboardInterrupt:
+            # quit
+            sys.exit()
+        
+        except:
+            print("IOerror passed")
+            pass
         self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
         self.prev_altitude = self.altitude
 
@@ -72,7 +85,7 @@ class I2C_sensors:
     #must be called after createLogFIle
     def writeToFile(self):
         now = datetime.now().time()
-        with open(self.filename, mode='w') as logfile:
+        with open(self.filename, mode='a') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
             file_writer.writerow([now, self.altitude,self.temperature, self.roll, self.pitch, self.yaw])
             return
@@ -99,7 +112,7 @@ class I2C_sensors:
 
     #sensor thread
     def main(self):
-        if self.logging=True:
+        if self.logging==True:
             sensors.readData()
             sensors.convertSensor()
             sensors.writeToFile()

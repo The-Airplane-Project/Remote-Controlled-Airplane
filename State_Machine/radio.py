@@ -133,10 +133,6 @@ class radio_comm:
         # have to store previous data
         # trim: check buttons, but only output -1, 0, or 1, for detrim, and trim
 
-        
-
-        if self.receivedMessage == [self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0]]:
-            return False, []
 
         if self.receivedMessage == []:
             self.counting_to_soft_reset += 1
@@ -145,6 +141,9 @@ class radio_comm:
             else:
                 return True, []
 
+        if self.receivedMessage == [self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0], self.receivedMessage[0]]:
+            return False, []
+        
         btns_value = 0
         
         trim_offset = 0

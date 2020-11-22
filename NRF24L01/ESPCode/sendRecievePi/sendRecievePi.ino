@@ -205,8 +205,8 @@ void loop(void){
   radio.startListening();
 
   static int wait_radio = 0;
-  //while radio unavailable continue waiting until 0.05 secs
-  while(!radio.available() && (wait_radio < 5)){
+  //while radio unavailable continue waiting until 0.02 secs
+  while(!radio.available() && (wait_radio < 10)){
     //set count down timer
     wait_radio ++;
     delay(10);

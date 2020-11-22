@@ -3,8 +3,8 @@
 from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
 import sys
 import time
-
 ##Starting point of the function
+
 
 class airplane:
     def __init__(self):

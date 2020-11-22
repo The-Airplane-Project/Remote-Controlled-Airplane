@@ -4,6 +4,8 @@ from state import State
 from airplane_objects import radio, motors, i2c_sensors
 import time
 import sys
+import os
+import logging
 #TODO: Implement autonomous states
 #Joystick button indexes
 LB = 7
@@ -35,7 +37,16 @@ class IdleState (State):
         return self
         
     def run(self):
+        filename_time = time.strftime("%Y%m%d-%H_%M_%S")
+        log_filename = "/home/pi/Remote-Controlled-Airplane/logs/" + filename_time + ".log"
+        os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+        logging.basicConfig(filename=log_filename, filemode='a', level=logging.DEBUG)
+
         print("Running IdleState")
+        
+        localtime = time.asctime( time.localtime(time.time()) )
+        logging.debug('%s: Running IdleState', localtime)
+        
         radio.start_radio()
         idle = 1
         looping = True
@@ -57,6 +68,10 @@ class IdleState (State):
             radio.send_message(idle, i2c_sensors)
 
         print ("Its whack that you are here in this spot in IdleState. Something terribly wrong")
+
+        localtime = time.asctime( time.localtime(time.time()) )
+        logging.debug('%s: Its whack that you are here in this spot in IdleState. Something terribly wrong', localtime)
+        
         return "Error"
 
 
@@ -128,7 +143,9 @@ class StandbyState(State):
                             return "Cruise"
 
                 radio.send_message(standby, i2c_sensors)
-
+            except KeyboardInterrupt:
+                # quit
+                sys.exit()
             except IndexError:
                 print ("Error occured in Standby State, index error") #log this later, but not print
                 return "Error"
@@ -177,6 +194,9 @@ class CruiseState (State):
                     return "Lost"
 
                 radio.send_message(cruise, i2c_sensors)
+        except KeyboardInterrupt:
+            # quit
+            sys.exit()
 
         except:    
             print ("MAYDAY-MAYDAY, Error occured in Cruise, restarting state")

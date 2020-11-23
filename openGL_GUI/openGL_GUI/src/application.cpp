@@ -1,7 +1,20 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <Windows.h>
+#include <windows.h>
+#include <Xinput.h>
+#include <stdio.h>
+#include <tchar.h>
+#pragma comment (lib, "xinput.lib")
+#include <cstdlib>
+
 #include <glm.hpp>
 #include <obj_loader.h>
+
+#include <Serial.h>
+#include <SerialClass.h>
+#include <gamepad.h>
+
 
 int main(void)
 {

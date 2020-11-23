@@ -148,3 +148,5 @@ bool Serial::IsConnected()
     //Simply return the connection status
     return this->connected;
 }
+
+

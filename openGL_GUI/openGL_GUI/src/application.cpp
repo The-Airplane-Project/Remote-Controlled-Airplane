@@ -1,5 +1,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm.hpp>
+#include <obj_loader.h>
+
 int main(void)
 {
     GLFWwindow* window;

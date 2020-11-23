@@ -2,8 +2,8 @@
 # Written by Steven Feng and Ayush Ghosh, Oct 28, 2020
 import sys
 import time
-import FaBo9Axis_MPU9250
-import Adafruit_BMP.BMP085 as BMP085
+#import FaBo9Axis_MPU9250
+#import Adafruit_BMP.BMP085 as BMP085
 import numpy as np
 
 import csv
@@ -37,24 +37,26 @@ class I2C_sensors:
         self.ahrs = MadgwickAHRS()
     
     
-        self.altimeter = BMP085.BMP085()
-        self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+        #self.altimeter = BMP085.BMP085()
+        #self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
         #self.createLogFile()
         #self.calibrate()
 
     #read sensor data raw
     def readData(self):
         try:
-            self.accel = self.mpu9250.readAccel()
-            time.sleep(0.01)
-            self.gyro = self.mpu9250.readGyro()
-            time.sleep(0.01)
-            self.altitude = -2
-            self.mag = self.mpu9250.readMagnet()
-            time.sleep(0.01)
-            self.altitude = 32000
-            self.altitude = round(self.altimeter.read_altitude(),2)
-            time.sleep(0.01)
+            a = 1
+            #self.accel = self.mpu9250.readAccel()
+            #time.sleep(0.01)
+            #self.gyro = self.mpu9250.readGyro()
+            #time.sleep(0.01)
+            #self.altitude = -2
+            #self.mag = self.mpu9250.readMagnet()
+            
+            #time.sleep(0.01)
+            #self.altitude = 32000
+            #self.altitude = round(self.altimeter.read_altitude(),2)
+            #time.sleep(0.01)
         except KeyboardInterrupt:
             # quit
             sys.exit()
@@ -62,14 +64,15 @@ class I2C_sensors:
         except:
             print("IOerror passed")
             pass
-        self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
-        self.prev_altitude = self.altitude
+        #self.vertical_speed = (self.altitude-self.prev_altitude)/self.refresh_time
+        #self.prev_altitude = self.altitude
 
     def calibrate(self):
         #calibrate here
-        self.createLogFile()
+        #self.createLogFile()
         #calibration complete
         #return True
+        a = 1
 
     def createLogFile(self):
         #generate log file based on generation date

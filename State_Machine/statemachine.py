@@ -78,7 +78,7 @@ class IdleState (State):
 class StandbyState(State):
     def on_event(self, event):
         if (event == "Cruise"):
-            i2c_sensors.calibrate()
+            #i2c_sensors.calibrate()
             return CruiseState()
         if (event == "EngOffBtn"):
             return IdleState()
@@ -156,6 +156,7 @@ class StandbyState(State):
 class CruiseState (State):
     def on_event(self, event):
         if (event == "Lost"):
+            motors.write_motor(1, 1, 1, 0, 0)
             return EmergencyState()
         elif(event == "EngOffBtn"):
             return StandbyState()

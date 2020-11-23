@@ -136,7 +136,7 @@ class radio_comm:
 
         if self.receivedMessage == []:
             self.counting_to_soft_reset += 1
-            if (self.counting_to_soft_reset >= 2):
+            if (self.counting_to_soft_reset >= 1):
                 return False, [] #Softreset now and signal emergency
             else:
                 return True, []

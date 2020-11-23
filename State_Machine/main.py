@@ -3,7 +3,7 @@
 from statemachine import IdleState, StandbyState, CruiseState, EmergencyState
 import sys
 import time
-from airplane_objects import i2c_sensors
+#from airplane_objects import i2c_sensors
 #import threading
 ##Starting point of the function
 

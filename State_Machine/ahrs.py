@@ -1,5 +1,5 @@
 #code adopted from https://github.com/morgil/madgwick_py/blob/master/madgwickahrs.py
-#Adopted and integrated by Steven Feng, Oct 30, 2020
+
 import warnings
 import numpy as np
 from numpy.linalg import norm

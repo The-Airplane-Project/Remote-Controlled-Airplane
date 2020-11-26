@@ -2,8 +2,8 @@
 # Written by Steven Feng and Ayush Ghosh, Oct 28, 2020
 import sys
 import time
-#import FaBo9Axis_MPU9250
-#import Adafruit_BMP.BMP085 as BMP085
+import FaBo9Axis_MPU9250
+import Adafruit_BMP.BMP085 as BMP085
 import numpy as np
 
 import csv
@@ -37,26 +37,35 @@ class I2C_sensors:
         self.ahrs = MadgwickAHRS()
     
     
-        #self.altimeter = BMP085.BMP085()
-        #self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+        self.altimeter = BMP085.BMP085()
+        x = True
+        while(x):
+            try:
+                self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+                x = False
+            except KeyboardInterrupt:
+                x = False
+            except:
+                pass
+
         #self.createLogFile()
         #self.calibrate()
 
     #read sensor data raw
     def readData(self):
         try:
-            a = 1
-            #self.accel = self.mpu9250.readAccel()
-            #time.sleep(0.01)
-            #self.gyro = self.mpu9250.readGyro()
-            #time.sleep(0.01)
-            #self.altitude = -2
-            #self.mag = self.mpu9250.readMagnet()
-            
-            #time.sleep(0.01)
-            #self.altitude = 32000
-            #self.altitude = round(self.altimeter.read_altitude(),2)
-            #time.sleep(0.01)
+            #a = 1
+            self.accel = self.mpu9250.readAccel()
+            time.sleep(0.01)
+            self.gyro = self.mpu9250.readGyro()
+            time.sleep(0.01)
+            self.altitude = -2
+            self.mag = self.mpu9250.readMagnet()
+           
+            time.sleep(0.01)
+            self.altitude = 32000
+            self.altitude = round(self.altimeter.read_altitude(),2)
+            time.sleep(0.01)
         except KeyboardInterrupt:
             # quit
             sys.exit()
@@ -69,10 +78,10 @@ class I2C_sensors:
 
     def calibrate(self):
         #calibrate here
-        #self.createLogFile()
+        self.createLogFile()
         #calibration complete
         #return True
-        a = 1
+        #a = 1
 
     def createLogFile(self):
         #generate log file based on generation date
@@ -99,20 +108,21 @@ class I2C_sensors:
         a = np.array([float(self.accel['x']),float(self.accel['y']),float(self.accel['z'])], dtype=float).flatten()
         m = np.array([float(self.mag['x']),float(self.mag['y']),float(self.mag['z'])], dtype=float).flatten()
         self.ahrs.update(g,a,m)
-        [self.roll, self.yaw, self.pitch] =self.ahrs.quaternion.to_euler123()
+        [self.roll, self.yaw, self.pitch] = self.ahrs.quaternion.to_euler123()
         self.roll = round(self.convertToDeg(self.roll))
         self.yaw = round(self.convertToDeg(self.yaw))
         self.pitch = round(self.convertToDeg(self.pitch))
 
 
     def convertToRad(self, degree):
-        pi = 3.1416
+        pi = 3.141592653589793238462643383279
         return degree*pi/180
 
     def convertToDeg(self, rad):
-        pi = 3.1416
+        pi = 3.141592653589793238462643383279
         return rad*180/pi
-
+    def write_values(self):
+        a = 1
     #sensor thread
     def main(self):
         if self.logging==True:

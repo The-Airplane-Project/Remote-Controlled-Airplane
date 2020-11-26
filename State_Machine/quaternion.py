@@ -1,6 +1,6 @@
 import numpy as np
 import numbers
-#Adopted and integrated by Steven Feng, Oct 30, 2020
+
 
 class Quaternion:
     """

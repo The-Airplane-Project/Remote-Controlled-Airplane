@@ -1,31 +1,28 @@
 # Sets up IMU, altimeter, and file write
 # Written by Steven Feng and Ayush Ghosh, Oct 28, 2020
+import os
 import sys
 import time
-import FaBo9Axis_MPU9250
+import smbus
+
+from imusensor.MPU9250 import MPU9250
+from imusensor.filters import madgwick
+
 import Adafruit_BMP.BMP085 as BMP085
-import numpy as np
+
 
 import csv
-from ahrs import MadgwickAHRS
-from datetime import datetime, date
 
+from datetime import datetime, date
+from multiprocessing import Array
 
 
 class I2C_sensors:
     def __init__(self):
         self.refresh_time = 0.050 #20 hz
 
-        self.logging = False
+        self.logging = True
 
-        #IMU raw values
-        self.accel = {}
-        self.gyro= {}
-        self.mag= {}
-        #converted to euler angle with some wicked math
-        self.roll = 0
-        self.yaw = 0
-        self.pitch = 0
         #altimeter angle
         self.altitude = 0
         self.temperature = 0
@@ -34,40 +31,37 @@ class I2C_sensors:
         #file name for output (will be sequentially generated)
         self.filename = ''
 
-        self.ahrs = MadgwickAHRS()
-    
-    
+        self.sensorfusion = madgwick.Madgwick(0.5)
+
+        address = 0x68
+        bus = smbus.SMBus(1)
+        self.imu = MPU9250.MPU9250(bus, address)
+        self.imu.begin()
+        
         self.altimeter = BMP085.BMP085()
-        x = True
-        while(x):
-            try:
-                self.mpu9250 = FaBo9Axis_MPU9250.MPU9250()
-                x = False
-            except KeyboardInterrupt:
-                x = False
-            except:
-                pass
 
         #self.createLogFile()
         #self.calibrate()
 
+        self.sensor_data = Array('d', [0.0, 0.0, 0.0, 0.0, 0.0])
+    
     #read sensor data raw
     def readData(self):
         try:
-            #a = 1
-            self.accel = self.mpu9250.readAccel()
-            time.sleep(0.01)
-            self.gyro = self.mpu9250.readGyro()
-            time.sleep(0.01)
-            self.altitude = -2
-            self.mag = self.mpu9250.readMagnet()
-           
-            time.sleep(0.01)
+            currTime = time.time()
+            self.imu.readSensor()
+            for i in range(10):
+                newTime = time.time()
+                dt = newTime - currTime
+                currTime = newTime
+                self.sensorfusion.updateRollPitchYaw(self.imu.AccelVals[0], self.imu.AccelVals[1], self.imu.AccelVals[2], self.imu.GyroVals[0], self.imu.GyroVals[1], self.imu.GyroVals[2], self.imu.MagVals[0], self.imu.MagVals[1], self.imu.MagVals[2], dt)
+
             self.altitude = 32000
             self.altitude = round(self.altimeter.read_altitude(),2)
+            print("Altitude: ", self.altitude)
+            print ("mad roll: {0} ; mad pitch : {1} ; mad yaw : {2}".format(self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw))
             time.sleep(0.01)
         except KeyboardInterrupt:
-            # quit
             sys.exit()
         
         except:
@@ -99,7 +93,7 @@ class I2C_sensors:
         now = datetime.now().time()
         with open(self.filename, mode='a') as logfile:
             file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
-            file_writer.writerow([now, self.altitude,self.temperature, self.roll, self.pitch, self.yaw])
+            file_writer.writerow([now, self.altitude,self.temperature, self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw])
             return
 
     def convertSensor(self):
@@ -121,27 +115,55 @@ class I2C_sensors:
     def convertToDeg(self, rad):
         pi = 3.141592653589793238462643383279
         return rad*180/pi
-    def write_values(self):
-        a = 1
+    
+    def write_shared_data(self):
+        try:
+            self.sensor_data.acquire()
+            self.sensor_data[0] = self.altitude
+            self.sensor_data[1] = self.temperature
+            self.sensor_data[2] = self.sensorfusion.roll
+            self.sensor_data[3] = self.sensorfusion.pitch
+            self.sensor_data[4] = self.sensorfusion.yaw
+            self.sensor_data.release()
+        except Exception as e:
+            print (e)
+            self.sensor_data.release()
+
+    def read_shared_data(self):
+        try:
+            self.sensor_data.acquire()
+            x = self.sensor_data[:]
+            self.sensor_data.release()
+            return x
+        except Exception as e:
+            print (e)
+            self.sensor_data.release()
+        
     #sensor thread
     def main(self):
-        if self.logging==True:
-            sensors.readData()
-            sensors.convertSensor()
-            sensors.writeToFile()
+        time_wait = time.time() + 0.2
+        while (True):
+            if self.logging==True:
+                self.readData()
+                #sensors.convertSensor()
+                if (time.time() >= time_wait):
+                    self.writeToFile()
+                    self.write_shared_data()
+                    time_wait = time.time() + 0.2
 
 #test program
 if __name__ == '__main__':
     sensors = I2C_sensors()
     
     sensors.calibrate()
-    sensors.createLogFile()
-    while (1):
-        sensors.readData()
-        sensors.convertSensor()
-        print("yaw: %s" % str(sensors.yaw))
-        print("roll: %s" % str(sensors.roll))
-        print("pitch: %s" % str(sensors.pitch))
-        print("altitude: %s" % str(sensors.altitude))
-        sensors.writeToFile()
-        time.sleep(0.1)
+
+    sensors.logging=True
+    sensors.main()
+        #sensors.readData()
+        #sensors.convertSensor()
+        #print("yaw: %s" % str(sensors.yaw))
+        #print("roll: %s" % str(sensors.roll))
+        #print("pitch: %s" % str(sensors.pitch))
+        #print("altitude: %s" % str(sensors.altitude))
+        #sensors.writeToFile()
+        #time.sleep(0.1)

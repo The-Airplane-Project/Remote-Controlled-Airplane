@@ -1,5 +1,5 @@
 import time
-from multiprocessing import Array
+from multiprocessing import Array, Value
 class Servo:
     def __init__(self):
         #self.logging = True

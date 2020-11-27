@@ -8,7 +8,7 @@ pi = pigpio.pi()
 
 motors = motorController(25, 22, 13, 24, 21, pi)
 i2c_sensors = I2C_sensors()
-
+I2C_sensors.calibrate()
 #radio = radio_comm_test()
 radio = radio_comm(pi)
 

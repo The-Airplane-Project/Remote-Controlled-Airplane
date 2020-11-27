@@ -33,6 +33,8 @@ ARM_TIME_OUT = 12 # Number of messages before arm sequence resets
 class IdleState (State):
     def on_event(self, event):
         if (event == "EngOnBtn"):
+            i2c_sensors.calibrate()
+            time.sleep(6) # wait for madgwick to settle
             return StandbyState()
         return self
         
@@ -50,7 +52,6 @@ class IdleState (State):
         radio.start_radio()
         idle = 1
         looping = True
-        i2c_sensors.logging = False
         while looping:
             #btn_num = int(input("Enter num: "))
             #radio.receivedMessage = [10, 100, 110, 90, btn_num, 80]
@@ -64,9 +65,14 @@ class IdleState (State):
                 if (radio.button_event_state[motorEnable]):
                     looping = False
                     return "EngOnBtn"
-
-            radio.send_message(idle, i2c_sensors)
-
+            sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
+            try:
+                sensor_data = i2c_sensors.read_shared_data()
+            except:
+                pass
+            
+            radio.send_message(idle, sensor_data)
+            
         print ("Its whack that you are here in this spot in IdleState. Something terribly wrong")
 
         localtime = time.asctime( time.localtime(time.time()) )
@@ -78,7 +84,7 @@ class IdleState (State):
 class StandbyState(State):
     def on_event(self, event):
         if (event == "Cruise"):
-            #i2c_sensors.calibrate()
+            i2c_sensors.write_sensor_log_status(True)
             return CruiseState()
         if (event == "EngOffBtn"):
             return IdleState()
@@ -91,7 +97,6 @@ class StandbyState(State):
 
     def run(self):
         print("Running StandbyState")
-        i2c_sensors.logging = False
         standby = 2
 
         self.reset_arm_sequence()
@@ -141,8 +146,15 @@ class StandbyState(State):
                             radio.cen_throttle_flag_3 = True
                             time_out_counter = 0
                             return "Cruise"
+                
+                sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
+                try:
+                    sensor_data = i2c_sensors.read_shared_data()
+                except:
+                    pass
+                
+                radio.send_message(standby, sensor_data)
 
-                radio.send_message(standby, i2c_sensors)
             except KeyboardInterrupt:
                 # quit
                 sys.exit()
@@ -159,11 +171,11 @@ class CruiseState (State):
             motors.write_motor(1, 1, 1, 0, 0)
             return EmergencyState()
         elif(event == "EngOffBtn"):
+            i2c_sensors.write_sensor_log_status(False)
             return StandbyState()
             
         return self
     def run(self):
-        i2c_sensors.logging = True
         cruise = 3
         try:
             print("Running CruiseState")
@@ -193,8 +205,15 @@ class CruiseState (State):
 
                 else:
                     return "Lost"
-
-                radio.send_message(cruise, i2c_sensors)
+                
+                sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
+                try:
+                    sensor_data = i2c_sensors.read_shared_data()
+                except:
+                    pass
+                
+                radio.send_message(cruise, sensor_data)
+        
         except KeyboardInterrupt:
             # quit
             sys.exit()
@@ -211,7 +230,7 @@ class EmergencyState (State):
         return self
     def run(self):
         print("Running EmergencyState")
-        i2c_sensors.logging = True
+        
         emergency = 4
         radio_valid = False
         motors.write_motor(0, 0, 0, 0, 0)
@@ -225,7 +244,14 @@ class EmergencyState (State):
             if (radio_valid and msg_decode != []):
                 return "Signal"
 
-            radio.send_message(emergency, i2c_sensors)
+
+            sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
+            try:
+                sensor_data = i2c_sensors.read_shared_data()
+            except:
+                pass
+
+            radio.send_message(emergency, sensor_data)
             
         print ("Its whack that you are here in this spot in EmergencyState. Something terribly wrong")
         return "Error"

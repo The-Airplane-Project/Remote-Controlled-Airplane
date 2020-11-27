@@ -14,14 +14,14 @@ import Adafruit_BMP.BMP085 as BMP085
 import csv
 
 from datetime import datetime, date
-from multiprocessing import Array
+from multiprocessing import Array, Value
 
 
 class I2C_sensors:
     def __init__(self):
         self.refresh_time = 0.050 #20 hz
 
-        self.logging = True
+        self.logging = Value('i', False)
 
         #altimeter angle
         self.altitude = 0
@@ -39,7 +39,7 @@ class I2C_sensors:
         self.imu.begin()
         
         self.altimeter = BMP085.BMP085()
-
+        self.calibrated = False
         #self.createLogFile()
         #self.calibrate()
 
@@ -58,8 +58,8 @@ class I2C_sensors:
 
             self.altitude = 32000
             self.altitude = round(self.altimeter.read_altitude(),2)
-            print("Altitude: ", self.altitude)
-            print ("mad roll: {0} ; mad pitch : {1} ; mad yaw : {2}".format(self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw))
+            #print("Altitude: ", self.altitude)
+            #print ("mad roll: {0} ; mad pitch : {1} ; mad yaw : {2}".format(self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw))
             time.sleep(0.01)
         except KeyboardInterrupt:
             sys.exit()
@@ -73,6 +73,8 @@ class I2C_sensors:
     def calibrate(self):
         #calibrate here
         self.createLogFile()
+        self.calibrated = True
+        print ("Calibration complete: ", self.calibrated)
         #calibration complete
         #return True
         #a = 1
@@ -83,8 +85,8 @@ class I2C_sensors:
         date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
         self.filename = '/home/pi/Remote-Controlled-Airplane/State_Machine/SensorLog/i2c_sensor'+str(date_time)+'.csv'
         with open (self.filename, mode='w') as logfile:
-            file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
-            file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])
+            self.file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
+            self.file_writer.writerow(['time', 'altitude', 'temp','roll', 'pitch', 'yaw'])
             return
 
     #write current sensor value to file
@@ -92,8 +94,8 @@ class I2C_sensors:
     def writeToFile(self):
         now = datetime.now().time()
         with open(self.filename, mode='a') as logfile:
-            file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
-            file_writer.writerow([now, self.altitude,self.temperature, self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw])
+            self.file_writer = csv.writer(logfile, delimiter=',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
+            self.file_writer.writerow([now, self.altitude,self.temperature, self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw])
             return
 
     def convertSensor(self):
@@ -138,18 +140,39 @@ class I2C_sensors:
         except Exception as e:
             print (e)
             self.sensor_data.release()
-        
+    
+    def write_sensor_log_status(self, status):
+        try:
+            self.logging.acquire()
+            self.logging.value = bool(status)
+            self.logging.release()
+        except Exception as e:
+            print (e)
+            self.logging.release()
+
+    def read_sensor_log_status(self):
+        try:
+            self.logging.acquire()
+            x = self.logging.value
+            self.logging.release()
+            return x
+
+        except Exception as e:
+            print (e)
+            self.logging.release()
+
     #sensor thread
     def main(self):
-        time_wait = time.time() + 0.2
+        time_wait = time.time() + 0.1
         while (True):
-            if self.logging==True:
-                self.readData()
+            self.readData()
                 #sensors.convertSensor()
-                if (time.time() >= time_wait):
-                    self.writeToFile()
-                    self.write_shared_data()
-                    time_wait = time.time() + 0.2
+            #if (time.time() >= time_wait):
+            self.write_shared_data()
+            if self.read_sensor_log_status() and self.calibrated:
+                print("Writing to file")
+                self.writeToFile()
+            time_wait = time.time() + 0.1
 
 #test program
 if __name__ == '__main__':

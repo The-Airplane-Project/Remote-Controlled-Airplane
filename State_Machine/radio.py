@@ -206,7 +206,7 @@ class radio_comm:
                 byte = byte >> 1
         return crc
 
-    def send_message(self, stateEnum, i2c_sensors):
+    def send_message(self, stateEnum, sensor_data):
         # grab variables from i2c_sensor, ultrasound, and send
         #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude_byte1 -- altitude_byte2
         # 1 for positive, 0 for negative
@@ -218,15 +218,29 @@ class radio_comm:
         # 4 level flight
         # 5 autonomous takeoff
         # 6 autonomous land
+
+        ###SensorArray Defintion
+        #sensor_data[0] -> altitude
+        #sensor_data[1] -> temperature
+        #sensor_data[2] -> sensorfusion.roll
+        #sensor_data[3] -> sensorfusion.pitch
+        #sensor_data[4] -> sensorfusion.yaw
+        
+        alt = 0
+        temp = 1
+        roll = 2
+        pitch = 3
+        yaw = 4
+        
         byte4 = 0
-        if (i2c_sensors.roll>0):
+        if (sensor_data[roll]>0):
             byte4+=128 #set bit 7
-        if (i2c_sensors.yaw>0):
+        if (sensor_data[yaw]>0):
             byte4+=64 #set bit 6
-        if (i2c_sensors.pitch>0):
+        if (sensor_data[pitch]>0):
             byte4+=32 #set bit 5
 
-        altitude = round(i2c_sensors.altitude)
+        altitude = round(sensor_data[alt])
 
         if altitude < 0:
             altitude = abs(altitude)
@@ -255,7 +269,7 @@ class radio_comm:
         #    print (x | (y<<8))
         
         byte4+=stateEnum
-        message=[abs(round(i2c_sensors.roll)), abs(round(i2c_sensors.yaw)), abs(round(i2c_sensors.pitch)), byte4, alt_1, alt_2]
+        message=[abs(round(sensor_data[roll])), abs(round(sensor_data[yaw])), abs(round(sensor_data[pitch])), byte4, alt_1, alt_2]
         
         print("Sending: {}".format(message))
         #while len(message) < self.MAX_PKG_SIZE:

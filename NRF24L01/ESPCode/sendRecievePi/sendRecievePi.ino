@@ -185,7 +185,7 @@ void loop(void){
   
   if (newData){
     radio.write(outgoingRadio, sizeof(outgoingRadio)) ;
-    delay(10);
+    //delay(10);
     newData = false;
     
     //Testing part without the hardware
@@ -206,17 +206,17 @@ void loop(void){
 
   static int wait_radio = 0;
   //while radio unavailable continue waiting until 0.1 secs
-  while(!radio.available() && (wait_radio < 10)){
+  while(!radio.available() && (wait_radio < 20)){
     //set count down timer
     wait_radio ++;
-    delay(10);
+    delay(5);
     }
     wait_radio = 0;
     
   if (radio.available()){
     radio.read(incomingRadio, sizeof(incomingRadio));
     //incoming_msg = true;
-    delay(10);
+    //delay(10);
   }
 
     //testing part
@@ -255,6 +255,8 @@ void loop(void){
     encode_to_Serial();
     incoming_msg = false;
   //}
+    delay(10);
     write_to_serial();
+    //
     radio.stopListening();  
 }

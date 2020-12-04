@@ -18,7 +18,7 @@ class motorController:
         self.trim_offset_MIN = -15
 
         #ESC values
-        self.escMax = 2000
+        self.escMax = 2200
         self.escMin = 700
 
         #angles
@@ -88,8 +88,9 @@ class motorController:
             elif (trimoffset<0 and self.trim_offset-3 >=self.trim_offset_MIN):
                 self.trim_offset-=3
         self.decode_angle(aileronValue_, rudderAngle_, elevatorAngle_)
-        self.escValue = escValue_*5+700 #since esc value is from 0-240 and we want it from 700 - 2000
-
+        self.escValue = escValue_*6+700 #since esc value is from 0-240 and we want it from 700 - 2000
+        if (self.escValue >= self.escMax):
+            self.escValue == self.escMax
 
 
         #write to servos

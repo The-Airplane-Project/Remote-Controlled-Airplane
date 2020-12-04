@@ -126,34 +126,32 @@ int main() {
 
             cout << "Left thumb stick: (" << std::to_string(gamepad.msg[LeftStickX]) << ", " << std::to_string(gamepad.msg[LeftStickY])
                 << ")   Right thumb stick : (" << std::to_string(gamepad.msg[RightStickY]) << endl;
-
+            Sleep(10);
             /*cout << "analog trigger: " << std::to_string(gamepad.msg[Rudder]) << "   Buttons: " 
                 << std::to_string(gamepad.msg[Buttons]) << "   DPad: "<< std::to_string(gamepad.msg[Dpads])
                 << " Crc8: "<< std::to_string(gamepad.msg[Crc8_1])
                 << " "<< std::to_string(gamepad.msg[Crc8_2]) << endl;
             *///Sleep(10);
+            if (1) {
+                //gamepad.encode();
+
+                for (int i = 0; i < MSGLEN; i++) {
+                    command[i] = gamepad.msg[i];
+                }
+
+                if (port->WriteData(command, MSGLEN)) {   //write to ESP
+                    printf("\n(writing success)\n");
+                }
+                GetSystemTime(&st);
+                printf("The system time is: %02d:%02d:%02d:%02d ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+                cout << count << "Sent to ESP: ";
+                for (int i = 0; i < MSGLEN; i++) {
+                    cout << (int)(unsigned char)command[i] << " ";
+                }
+                cout << endl;
+            }
 		}
-        if (1) {
-            //gamepad.encode();
-
-            for (int i = 0; i < MSGLEN; i++) {
-                command[i] = gamepad.msg[i];
-            }
-            
-            if (port->WriteData(command, MSGLEN)) {   //write to ESP
-                printf("\n(writing success)\n");
-            }
-            GetSystemTime(&st);
-            printf("The system time is: %02d:%02d:%02d:%02d ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
-            cout << count << "Sent to ESP: ";
-            for (int i = 0; i < MSGLEN; i++) {
-                cout << (int)(unsigned char)command[i] << " ";
-            }
-            cout << endl;
-        }
-
-        //delay
-        Sleep(10);
+        
 
         //read from arduino output
         
@@ -173,6 +171,7 @@ int main() {
         
         count++;
         //delay
+        
         //Sleep(50);
 
     }

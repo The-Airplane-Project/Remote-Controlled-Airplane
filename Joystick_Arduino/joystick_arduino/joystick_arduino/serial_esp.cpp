@@ -32,20 +32,20 @@ string plane_state[8] = {
     "invalid"
 };
 
-void send_to_GUI(uint8_t* receivedMessage) {
+void Gamepad::send_to_GUI(uint8_t* receivedMessage) {
     //A ROS FUNCTION that packages incoming data and publishes
 
     /***********************************
-    message: roll -- yaw -- pitch-- (Signed + statemachine) --altitude_byte1 -- altitude_byte2
-         1 for positive, 0 for negative
-         roll yaw pitch - 0 - [State Machine]
-         0 idle
-         1 standby
-         2 cruise
-         3 emergency
-         4 level flight
-         5 autonomous takeoff
-         6 autonomous land
+    #message: roll -- yaw -- pitch -- (Signed + statemachine) -- altitude_byte1 -- altitude_byte2
+        # 1 for positive, 0 for negative
+        # roll yaw pitch - 0 - [ State Machine]
+        # 0 idle
+        # 1 standby
+        # 2 cruise
+        # 3 emergency
+        # 4 level flight
+        # 5 autonomous takeoff
+        # 6 autonomous land
     *************************************/
     uint8_t byte4 = receivedMessage[3];
     static int16_t altitude = 0;
@@ -54,6 +54,9 @@ void send_to_GUI(uint8_t* receivedMessage) {
     static int pitch = 0;
     static int yaw = 0;
     static uint8_t curr_state = 0;
+    static uint8_t prev_state = 0;
+    static int vibrate_counter = 70;
+
     //Decode algorithm for altitude
     uint8_t alt_1 = receivedMessage[4];
     uint8_t alt_2 = receivedMessage[5];
@@ -94,6 +97,19 @@ void send_to_GUI(uint8_t* receivedMessage) {
     if (curr_state > 7) {
         curr_state = 7;
     }
+    if (prev_state != curr_state) {
+        //Vibrate until state changes. Set counter to zero
+        vibrate_counter = 0;
+        prev_state = curr_state;
+    }
+    if (vibrate_counter < 64) {
+        vibrate(1000, 1000);
+        vibrate_counter++;
+    }
+    else {
+        vibrate(0, 0);
+    }
+
     cout << "Roll: " << roll << " | Yaw: " << yaw
         << " | Pitch: " << pitch << " | State: " << plane_state[curr_state]
         << " | Altitude: " << altitude << endl;
@@ -167,6 +183,7 @@ int main() {
                 cout << int(receivedMsg[i]) << " ";
             }
             cout << endl;
+            gamepad.send_to_GUI(receivedMsg);
             gamepad.receive_new_data = false;
         
         count++;

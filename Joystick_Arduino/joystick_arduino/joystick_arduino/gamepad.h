@@ -70,6 +70,7 @@ public:
     bool IsPressed(WORD);
     void vibrate(int magnitudeLeft, int magnitudeRight);
 	void encode();
+	void send_to_GUI(uint8_t* receivedMessage);
 	void decode(Serial* port, uint8_t* receivedMessage);
 	uint8_t calc_crc8(uint8_t datagram[], uint8_t len);
 	bool incoming_serial_valid(uint8_t* receivedMessage);

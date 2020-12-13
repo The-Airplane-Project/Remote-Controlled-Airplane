@@ -22,14 +22,14 @@ using namespace std;
 SYSTEMTIME st;
 
 string plane_state[8] = {
-    "idle",
+	"invalid",
+	"idle",
     "standby",
     "cruise",
     "emergency",
     "level_flight",
     "autonomous_takeoff",
-    "autonomous_land",
-    "invalid"
+    "autonomous_land"
 };
 
 void Gamepad::send_to_GUI(uint8_t* receivedMessage) {
@@ -97,13 +97,17 @@ void Gamepad::send_to_GUI(uint8_t* receivedMessage) {
     if (curr_state > 7) {
         curr_state = 7;
     }
-    if (prev_state != curr_state) {
+	cout << "curr_state: " << int(curr_state) << endl;
+	cout << "prev_state: " << int(prev_state) << endl;
+
+    if (prev_state != curr_state && curr_state != 0){
         //Vibrate until state changes. Set counter to zero
         vibrate_counter = 0;
+		vibrate(32000, 32000);
         prev_state = curr_state;
     }
-    if (vibrate_counter < 64) {
-        vibrate(1000, 1000);
+    if (vibrate_counter < 15) {
+        
         vibrate_counter++;
     }
     else {
@@ -214,6 +218,7 @@ void Gamepad::decode(Serial* port, uint8_t* receivedMessage) {
     for (int i = 0; i < RAW_SERIAL_SIZE; i++) {
         receivedMessage[i] = 0;
     }
+	receivedMessage[RAW_SERIAL_SIZE-3] = 5;
     
     while ((stop_loop == false)) {
         n = (port->ReadData(rc, 1));

@@ -1,8 +1,5 @@
 # Remote-Controlled-Airplane
-**This is the radio_test branch. Look at the readme file in the directory NRF24L01 for most up-to-date info.**
-
 In this project, we aim to create a remote controlled airplane with video streaming capabilities using solely opensource standards
-
 
 ## Controls
 Roll: left joystick x axis\
@@ -13,3 +10,18 @@ Engine start: screen switch button (to prevent the engine from accidentally star
 Engine stop: option button \
 Elevator trim Up: RB button (2 deg per press, max 10 deg)\
 Elevator trim Down: LB button (2 deg per press, max 10 deg)\
+
+## Mechanical Parts:
+*** To be released on GrabCAD ***
+
+## State Machine Overview
+![State_machine Diagram](/Statemachine_Diagram.png)
+For more detailed information, please refer to StateMachine.md
+
+## Motor Pipeline Overciew
+![Motor Pipeline](/Motor_Pipeline.png)
+For more detailed information, please refer to MotorPipeline.md
+
+## Feedback Pipeline Overview
+![Feedback Pipeline](/Feedback_Pipeline.png)
+For more detailed information, please refer to FeedbackPipeline.md 

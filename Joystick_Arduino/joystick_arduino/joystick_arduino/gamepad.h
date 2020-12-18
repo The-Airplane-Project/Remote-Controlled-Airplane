@@ -220,9 +220,9 @@ void Gamepad::encode() {
 	msg[Start] = 251; //ASCII for Start
 	msg[End] = 252;//ASCII for  Stop
 	//convert magnitude to angle 
-	//leftX, aileron, +23 --> -23
+	//leftX, aileron, +20 --> -20
 
-	msg[LeftStickX] = uint8_t(leftStickX * 23 * 2 + 100);
+	msg[LeftStickX] = uint8_t(leftStickX * 20 * 2 + 100);
 
 	
 	//leftY, elevator, +30 --> -27

@@ -33,7 +33,8 @@ class motorController:
         self.elevatorAngleMAX = 30
         self.elevatorAngleMIN = -27
         self.rudderNEUTRAL = 95
-        self.aileronNEUTRAL = 90
+        self.aileronLeftNEUTRAL = 100
+        self.aileronRightNEUTRAL = 80
 
     #takes in control surface angles and converts to motor angles
     def decode_angle(self, aileronValue_, rudderAngle_, elevatorAngle_ ):
@@ -55,23 +56,23 @@ class motorController:
         #figure out aileron angle from
         if (abs(aileronValue_)<2): #if within +-2
             self.aileronValue = 90
-            self.aileronLeftAngle = self.aileronNEUTRAL
-            self.aileronRightAngle = self.aileronNEUTRAL
+            self.aileronLeftAngle = self.aileronLeftNEUTRAL
+            self.aileronRightAngle = self.aileronRightNEUTRAL
         elif(aileronValue_<0): #rolling left
             #left aileron angle positive
             self.aileronLeftAngle = abs(aileronValue_)
-            self.aileronLeftAngle = round(90.18+2.527*self.aileronLeftAngle - 0.0162*self.aileronLeftAngle*self.aileronLeftAngle)
+            self.aileronLeftAngle = round(100.1+4.21*self.aileronLeftAngle - 0.2085*self.aileronLeftAngle*self.aileronLeftAngle) + 0.006933*self.aileronLeftAngle*self.aileronLeftAngle*self.aileronLeftAngle
             #right aileron negatve
             self.aileronRightAngle = -abs(aileronValue_)
-            self.aileronRightAngle = round(90.18-1.882*self.aileronRightAngle+0.1203*self.aileronRightAngle*self.aileronRightAngle+0.003837*self.aileronRightAngle*self.aileronRightAngle*self.aileronRightAngle)
+            self.aileronRightAngle = round(82.72-2.89*self.aileronRightAngle-0.09458*self.aileronRightAngle*self.aileronRightAngle-0.004588*self.aileronRightAngle*self.aileronRightAngle*self.aileronRightAngle)
 
         else: #rolling right
             #left aileron angle negative
             self.aileronLeftAngle = -abs(aileronValue_)
-            self.aileronLeftAngle = round(90.02+0.6657*self.aileronLeftAngle-0.09074*self.aileronLeftAngle*self.aileronLeftAngle-0.00192*self.aileronLeftAngle*self.aileronLeftAngle*self.aileronLeftAngle)
+            self.aileronLeftAngle = round(99.89+4.127*self.aileronLeftAngle+0.2290*self.aileronLeftAngle*self.aileronLeftAngle+0.008014*self.aileronLeftAngle*self.aileronLeftAngle*self.aileronLeftAngle)
             #right aileron angle positive
             self.aileronRightAngle = abs(aileronValue_)
-            self.aileronRightAngle =round(89.55-1.556*self.aileronRightAngle-0.007206*self.aileronRightAngle*self.aileronRightAngle)
+            self.aileronRightAngle =round(83.39-2.116*self.aileronRightAngle-0.01777*self.aileronRightAngle*self.aileronRightAngle+0.0007376*self.aileronRightAngle*self.aileronRightAngle*self.aileronRightAngle)
 
     #assign angles to motor and ESC
     #trim_offset is either -1, 0, or 1, based on LB, RB button press

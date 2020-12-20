@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #By Steven Feng and Ayush Ghosh
 from state import State
-from airplane_objects import radio, motors, i2c_sensors
+from airplane_objects import radio, motors#, i2c_sensors
 import time
 import sys
 import os
@@ -33,7 +33,7 @@ ARM_TIME_OUT = 12 # Number of messages before arm sequence resets
 class IdleState (State):
     def on_event(self, event):
         if (event == "EngOnBtn"):
-            i2c_sensors.calibrate()
+            #i2c_sensors.calibrate()
             time.sleep(6) # wait for madgwick to settle
             return StandbyState()
         return self
@@ -66,10 +66,10 @@ class IdleState (State):
                     looping = False
                     return "EngOnBtn"
             sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
-            try:
-                sensor_data = i2c_sensors.read_shared_data()
-            except:
-                pass
+            #try:
+             #   sensor_data = i2c_sensors.read_shared_data()
+            #except:
+             #   pass
             
             radio.send_message(idle, sensor_data)
             
@@ -84,7 +84,7 @@ class IdleState (State):
 class StandbyState(State):
     def on_event(self, event):
         if (event == "Cruise"):
-            i2c_sensors.write_sensor_log_status(True)
+            #i2c_sensors.write_sensor_log_status(True)
             return CruiseState()
         if (event == "EngOffBtn"):
             return IdleState()
@@ -148,10 +148,10 @@ class StandbyState(State):
                             return "Cruise"
                 
                 sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
-                try:
-                    sensor_data = i2c_sensors.read_shared_data()
-                except:
-                    pass
+               # try:
+                    #sensor_data = i2c_sensors.read_shared_data()
+                #except:
+                 #   pass
                 
                 radio.send_message(standby, sensor_data)
 
@@ -171,7 +171,7 @@ class CruiseState (State):
             motors.write_motor(1, 1, 1, 0, 0)
             return EmergencyState()
         elif(event == "EngOffBtn"):
-            i2c_sensors.write_sensor_log_status(False)
+            #i2c_sensors.write_sensor_log_status(False)
             return StandbyState()
             
         return self
@@ -207,10 +207,10 @@ class CruiseState (State):
                     return "Lost"
                 
                 sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
-                try:
-                    sensor_data = i2c_sensors.read_shared_data()
-                except:
-                    pass
+                #try:
+                #    sensor_data = i2c_sensors.read_shared_data()
+                #except:
+                 #   pass
                 
                 radio.send_message(cruise, sensor_data)
         
@@ -246,10 +246,10 @@ class EmergencyState (State):
 
 
             sensor_data = [0.0, 0.0, 0.0, 0.0, 0.0]
-            try:
-                sensor_data = i2c_sensors.read_shared_data()
-            except:
-                pass
+           # try:
+            #    sensor_data = i2c_sensors.read_shared_data()
+            #except:
+             #   pass
 
             radio.send_message(emergency, sensor_data)
             

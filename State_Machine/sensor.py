@@ -180,7 +180,7 @@ if __name__ == '__main__':
     
     sensors.calibrate()
 
-    sensors.logging=True
+    #sensors.logging=True
     sensors.main()
         #sensors.readData()
         #sensors.convertSensor()

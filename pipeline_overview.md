@@ -71,7 +71,7 @@ The actual altitude we receive from the altimeter sensor is in the form of a sig
 
 Thus the Altitude is broken into 2 bytes as shown:
 
-**Altitude(Bits 0-7) -> Altitude_byte1 **
+**Altitude(Bits 0-7) -> Altitude_byte1**
 
 **Altitude(Bits 8-15) -> Altitude_byte2**
 

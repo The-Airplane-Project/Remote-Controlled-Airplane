@@ -1,27 +1,67 @@
 # Remote-Controlled-Airplane
-In this project, we aim to create a remote controlled airplane with video streaming capabilities using solely opensource standards
 
-## Controls
-Roll: left joystick x axis\
-Pitch: left joystick y axis\
-Yaw: left, and right (LT, BT) --> need to resolve conflict if both are pressed. (maybe pick the bigger value, if the values are equal, return 0?)\
-Throttle: full power (up position), cruise power (neutral position), idle (down position)\
-Engine start: screen switch button (to prevent the engine from accidentally starting and hurting people)\
-Engine stop: option button \
-Elevator trim Up: RB button (2 deg per press, max 10 deg)\
-Elevator trim Down: LB button (2 deg per press, max 10 deg)\
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/The-Airplane-Project/Remote-Controlled-Airplane)
 
-## Mechanical Parts:
+In the Remote-Controlled-Airplane project, we aim to create a remote controlled airplane with video streaming and autonomous control capabilities using solely open source standards.
+
+
+### Mechanical Parts:
 *** To be released on GrabCAD ***
 
-## State Machine Overview
-![State_machine Diagram](/Statemachine_Diagram.png)
-For more detailed information, please refer to StateMachine.md
+### Hardware
+A list of our hardware used in this project:
+* Brushless Motor 2550KV
+* 4 Miuzei SG90 9G Servo Motors
+* HC-SR04 Ultrasonic Sonar Distance Sensor
+* MPU-9250 GY-9250 9 Axis Sensor Module I2C
+* BMP180 Barometric Pressure/Temperature/Altitude Sensor
+* NRF24L01+PA+LNA RF Transceiver Modules (radio communication)
+* Raspberry Pi Model B 3+ to be used as a **Onboard flight controller**
+* NodeMCU ESP8266 to be used as a **Ground radio relay**
+* Laptop with Windows 10 to be used as a **Ground base station**
+* Xbox Wireless Controller (Compatible with Xinput)
 
-## Motor Pipeline Overciew
-![Motor Pipeline](/Motor_Pipeline.png)
-For more detailed information, please refer to MotorPipeline.md
+## In this repo
+This repository includes all parts of Remote-Controlled-Aiplane project. This includes:
+* The flight control state machine for the onboard flight controller on RPi (`/State_Machine`)
+* Serial and Radio bridge for the ground radio relay on the NodeMCU ESP8266 (`/NRF24L01/ESPCode`)
+* Ground station app for sending joystick inputs and receiving sensor data from the ground radio relay via serial communication (`/Joystick_Arduino`)
 
-## Feedback Pipeline Overview
+# System Overview
+The overall communication system is divided into 2 major pipelines: Control and Feedback pipelines.
+
+A Windows based app has been developed for the ground base station which sends joystick commands over to the onboard flight controller.
+
+The onboard flight controller runs a state machine based in Python 3.
+### Joystick Control
+For this project an Xbox controller (compatible with Xinput) is used. The following controls are currently immplemented:
+| Action | Joystick Input |
+| --- | --- |
+| Roll | Left joystick x axis |
+| Pitch| Left joystick y axis |
+| Yaw| Left, and right (LT, BT) |
+| Throttle| Full power (up position), cruise power (neutral position), idle (down position) |
+| Engine start| Screen switch button (to prevent the engine from accidentally starting) |
+| Engine stop| Option button |
+| Elevator trim Up| RB button (2 deg per press, max 10 deg) |
+| Elevator trim Down| LB button (2 deg per press, max 10 deg) |
+
+### Control Pipeline Overview
+![Motor Pipeline](/Control_Pipeline.png)
+For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
+
+### Feedback Pipeline Overview
 ![Feedback Pipeline](/Feedback_Pipeline.png)
-For more detailed information, please refer to FeedbackPipeline.md 
+For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
+
+### State Machine Flight Control Overview
+![State_machine Diagram](/Statemachine_Diagram.png)
+For more detailed information, please refer to [state_machine.md](State_Machine/state_machine.md)
+
+### Getting Started
+Refer to the [Setup and Operations guide](setup_operations.md) for  setup instructions.
+
+
+### Features coming up!
+ - Immplementing Autonomous Flight control
+ - Improve feeback visualizations

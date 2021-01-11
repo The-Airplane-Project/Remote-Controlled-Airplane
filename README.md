@@ -1,4 +1,5 @@
 # Remote-Controlled-Airplane
+By Ayush Ghosh and Steven Feng
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/The-Airplane-Project/Remote-Controlled-Airplane)
 

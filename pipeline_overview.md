@@ -76,6 +76,7 @@ The **(Signs + States)** Byte can be further divided into individual bits repres
 |---|---|---|---|---|---|---|---|
 |Roll Sign|Yaw Sign|Pitch Sign| Unused |State bit 3|State bit 2|State bit 1|State bit 0|
 |Value (-ve: 0, +ve: 1)|Value (-ve: 0, +ve: 1)|Value (-ve: 0, +ve: 1)| - |Value (ON: 1, OFF 0)|Value (ON: 1, OFF 0)|Value (ON: 1, OFF 0)|Value (ON: 1, OFF 0)|
+
 As shown above the Roll/Pitch/Yaw sign bits indicate whether the corresponding angles in the message are negative or positive.
 
 The Bits 0-3 are looked at together as a 4 bit integer to determine the current state onboard the airplane. 

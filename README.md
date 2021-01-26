@@ -64,5 +64,5 @@ Refer to the [Setup and Operations guide](setup_operations.md) for  setup instru
 
 
 ### Features coming up!
- - Immplementing Autonomous Flight control
+ - Implementing Autonomous Flight control
  - Improve feeback visualizations

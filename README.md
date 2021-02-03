@@ -49,15 +49,15 @@ For this project an Xbox controller (compatible with Xinput) is used. The follow
 
 ### Control Pipeline Overview
 ![Motor Pipeline](/Control_Pipeline.png)
-For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
+For more detailed information, please refer to <strong>[pipeline_overview.md](pipeline_overview.md)</strong> 
 
 ### Feedback Pipeline Overview
 ![Feedback Pipeline](/Feedback_Pipeline.png)
-For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
+For more detailed information, please refer to <strong>[pipeline_overview.md](pipeline_overview.md)</strong>
 
 ### State Machine Flight Control Overview
 ![State_machine Diagram](/Statemachine_Diagram.png)
-For more detailed information, please refer to [state_machine.md](State_Machine/state_machine.md)
+For more detailed information, please refer to <strong>[state_machine.md](State_Machine/state_machine.md)</strong>
 
 ### Getting Started
 Refer to the [Setup and Operations guide](setup_operations.md) for  setup instructions.

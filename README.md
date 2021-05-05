@@ -5,7 +5,7 @@ By Ayush Ghosh and Steven Feng
 
 In the Remote-Controlled-Airplane project, we aim to create a remote controlled airplane with video streaming and autonomous control capabilities using solely open source standards.
 
-![Wide View](RC_Airplane_Wide.png "Wide View") ![Back View](RC_Airplane_Back.png "Back View") 
+![Wide View](RC_Airplane_Wide.jpg "Wide View") ![Back View](RC_Airplane_Back.jpg "Back View") 
 
 ### Mechanical Parts:
 *** To be released on GrabCAD ***

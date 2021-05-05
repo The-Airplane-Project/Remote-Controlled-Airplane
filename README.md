@@ -5,7 +5,8 @@ By Ayush Ghosh and Steven Feng
 
 In the Remote-Controlled-Airplane project, we aim to create a remote controlled airplane with video streaming and autonomous control capabilities using solely open source standards.
 
-![Wide View](RC_Airplane_Wide.jpg "Wide View") ![Back View](RC_Airplane_Back.jpg "Back View") 
+
+![Wide View](Assets/RC_Airplane_Wide.JPG "Wide View") ![Back View](Assets/RC_Airplane_Back.jpg "Back View") 
 
 ### Mechanical Parts:
 *** To be released on GrabCAD ***
@@ -49,15 +50,15 @@ For this project an Xbox controller (compatible with Xinput) is used. The follow
 | Elevator trim Down| LB button (2 deg per press, max 10 deg) |
 
 ### Control Pipeline Overview
-![Motor Pipeline](/Control_Pipeline.png)
+![Motor Pipeline](/Assets/Control_Pipeline.png)
 For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
 
 ### Feedback Pipeline Overview
-![Feedback Pipeline](/Feedback_Pipeline.png)
+![Feedback Pipeline](/Assets/Feedback_Pipeline.png)
 For more detailed information, please refer to [pipeline_overview.md](pipeline_overview.md) 
 
 ### State Machine Flight Control Overview
-![State_machine Diagram](/Statemachine_Diagram.png)
+![State_machine Diagram](/Assets/Statemachine_Diagram.png)
 For more detailed information, please refer to [state_machine.md](State_Machine/state_machine.md)
 
 ### Getting Started

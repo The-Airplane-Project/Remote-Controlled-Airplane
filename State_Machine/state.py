@@ -1,5 +1,5 @@
 #States for state machine, initalize properties for states. Inherited by drone_states.py
-#By Steven Feng Oct 21, 2020
+#By Ayush and Steven Oct 21, 2020
 
 class State(object):
 

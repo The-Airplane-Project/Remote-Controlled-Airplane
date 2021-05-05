@@ -1,5 +1,5 @@
 # Cruise State Proposal
-Drafted by Steven, Edited by Ayush
+By Steven and Ayush
 
 Nov 1, 2020
 

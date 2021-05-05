@@ -61,10 +61,11 @@ For more detailed information, please refer to [pipeline_overview.md](pipeline_o
 ![State_machine Diagram](/Assets/Statemachine_Diagram.png)
 For more detailed information, please refer to [state_machine.md](State_Machine/state_machine.md)
 
+
 ### Getting Started
 Refer to the [Setup and Operations guide](setup_operations.md) for  setup instructions.
 
 
 ### Features coming up!
- - Immplementing Autonomous Flight control
+ - Implementing Autonomous Flight control
  - Improve feeback visualizations

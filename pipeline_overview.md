@@ -4,7 +4,7 @@ The overall system is divided into 2 major pipelines: Control and Feedback pipel
 After timing the system we are able to achieve an average roundtrip communication time of 100 ms. For our purposes, a roundtrip is defined as the time it takes for one cycle of data exchange: Send joystick inputs to the airplane (through the control pipeline) followed by immediately receiving the sensor data on the ground station (through the feedback pipeline).
 
 ## Control Pipeline
-![Motor Pipeline](/Control_Pipeline.png)
+![Motor Pipeline](/Assets/Control_Pipeline.png)
 The chain of communication in the Control pipeline is shown in the diagram above.
 
 At first, input data is gathered from the Xbox controller using the XInput library. The Windows based C++ console app that has been developed reads these inputs and packages them into data which can be read by the ESP8266 Node MCU board with the attached radio module. The NRF24L01+ radio module can be used with a ESP board or an Arduino. Thus the Windows app receives the Xbox controller inputs and sends them to the ESP board over a Serial line.
@@ -14,7 +14,7 @@ Once the ESP board receives the Serial message, it verifys the validity of the m
 The Raspberry Pi decodes the radio packet and performs certain actions depending on the joystick inputs. These actions can include modifying servo motor positions, RPM for main motor (propeller), changing states in statemachine, enabling sensor data collections, etc.
 
 ## Feedback Pipeline
-![Feedback Pipeline](/Feedback_Pipeline.png)
+![Feedback Pipeline](/Assets/Feedback_Pipeline.png)
 The chain of communication in the Feedback pipeline is shown in the diagram above.
 
 At first, the raspberry Pi onboard the airplane will wait to establish valid contact with the ground station (Windows Laptop and ESP board) before sending sensor data back to the ground station. Once connection is established, the data from the onboard sensors (Altimeter, IMU, Ultrasound) are collected. The current state in the statemachine is also recorded. After that, the sensor data and state machine info is packaged into a radio packet to be sent over to the ground station via the NRF24L01+ radio module.
